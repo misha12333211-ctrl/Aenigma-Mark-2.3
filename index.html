@@ -415,7 +415,6 @@
                 } catch(e) { console.error("Stats syncing failed."); }
             }
 
-            // Управление интервалом обновлений и его очистка при выходе
             const statsInterval = setInterval(updateSystemStats, 15000);
             window.addEventListener("beforeunload", () => {
                 clearInterval(statsInterval);
@@ -637,7 +636,7 @@
                     
                     if (canvasTrace.length === 0 || canvasTrace.length % 3 === 0) {
                         canvasTrace.push({x: Math.round(x), y: Math.round(y)});
-                        // Ограничение размера буфера координат для защиты от переполнения
+
                         if (canvasTrace.length > 100) canvasTrace.shift();
                     }
                 };
