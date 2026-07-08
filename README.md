@@ -1,5 +1,7 @@
 ## AENIGMA MARK 2.3
+
 ---
+
 ## About
 
 AENIGMA is a riddle game.
@@ -19,8 +21,10 @@ Sometimes the answer is hidden in plain sight.
 Sometimes it is hidden in the question itself.
 
 If something seems impossible, you are probably looking in the wrong place.
+
 ---
-Rules
+
+## Rules
 
 - Every level has a single intended solution.
 - There are no time limits.
