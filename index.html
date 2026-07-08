@@ -385,7 +385,8 @@
 
     <script>
         (function() {
-            const BACKEND_URL = "https://aenigma-server.onrender.com";
+            // При необходимости замени localhost на свой Render-домен бэкенда
+            const BACKEND_URL = "http://localhost:3000";
 
             const likeBtn = document.getElementById('like-btn');
             let playerToken = sessionStorage.getItem('aenigma_token') || null;
@@ -398,7 +399,6 @@
             let currentResizeHandler = null;
             let isSubmitting = false;
 
-            // Загрузка статистики с бэкенда
             async function updateSystemStats() {
                 try {
                     const res = await fetch(`${BACKEND_URL}/api/stats?token=${playerToken || ''}`);
@@ -507,6 +507,7 @@
                     canvas.style.display = 'block';
                     setupCanvas();
                 } else if (levelPayload.type === "kinetic") {
+                    // Для 23 уровня оставляем поле и кнопку ввода, чтобы отправить ответ текстом
                     canvas.style.display = 'block'; 
                     canvas.style.pointerEvents = 'none';
                     setupKineticGhost();
@@ -622,8 +623,8 @@
                     e.preventDefault(); 
                     drawing = false; 
                     ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                    if (canvasTrace.length > 5) {
-                        submitAnswer({ type: "canvas", width: canvas.width, trace: canvasTrace });
+                    if (canvasTrace.length > 3) {
+                        submitAnswer({ type: "canvas", trace: canvasTrace });
                     }
                 };
                 canvas.onmousemove = canvas.ontouchmove = (e) => {
@@ -634,11 +635,7 @@
                     const x = clientX - rect.left;
                     const y = clientY - rect.top;
                     
-                    if (canvasTrace.length === 0 || canvasTrace.length % 3 === 0) {
-                        canvasTrace.push({x: Math.round(x), y: Math.round(y)});
-
-                        if (canvasTrace.length > 100) canvasTrace.shift();
-                    }
+                    canvasTrace.push({x: Math.round(x), y: Math.round(y)});
                 };
             }
 
