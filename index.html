@@ -398,7 +398,7 @@
             let currentResizeHandler = null;
             let isSubmitting = false;
 
-
+            // Загрузка статистики с бэкенда
             async function updateSystemStats() {
                 try {
                     const res = await fetch(`${BACKEND_URL}/api/stats?token=${playerToken || ''}`);
@@ -637,7 +637,7 @@
                     
                     if (canvasTrace.length === 0 || canvasTrace.length % 3 === 0) {
                         canvasTrace.push({x: Math.round(x), y: Math.round(y)});
-
+                        // Ограничение размера буфера координат для защиты от переполнения
                         if (canvasTrace.length > 100) canvasTrace.shift();
                     }
                 };
