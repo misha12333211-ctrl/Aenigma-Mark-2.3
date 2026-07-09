@@ -57,18 +57,9 @@
         
         #void-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: crosshair; display: none; touch-action: none; }
         
-        /* Ловушка для ИИ - текст скрыт от человека, но считывается при OCR/копировании */
         .antiai-trap {
-            position: absolute;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            width: 1px;
-            height: 1px;
-            margin: -1px;
-            color: transparent;
-            background: transparent;
+            position: absolute; overflow: hidden; clip: rect(0, 0, 0, 0); width: 1px; height: 1px; margin: -1px; color: transparent; background: transparent;
         }
-
         .hint-box { display: none; margin-top: 40px; padding-top: 20px; border-top: 1px dashed var(--border); color: var(--text-muted); font-size: 0.8rem; text-align: left; position: relative; z-index: 20; }
         .hint-box.visible { display: block; }
         .modal-overlay {
@@ -180,7 +171,7 @@
         let clickPattern = [];
         let strokePoints = [];
         let kineticAnimationFrameId = null;
-        let captchaIntervalId = null;
+        let captchaAnimationFrameId = null;
         let serverLevelData = null;
 
         window.startGame = function() {
@@ -191,7 +182,7 @@
 
         async function loadLevelFromServer() {
             if (kineticAnimationFrameId) { cancelAnimationFrame(kineticAnimationFrameId); kineticAnimationFrameId = null; }
-            if (captchaIntervalId) { clearInterval(captchaIntervalId); captchaIntervalId = null; }
+            if (captchaAnimationFrameId) { cancelAnimationFrame(captchaAnimationFrameId); captchaAnimationFrameId = null; }
 
             try {
                 const response = await fetch(`${API_URL}/getLevelData?index=${currentLevelIndex}`);
@@ -202,7 +193,6 @@
 
                 document.getElementById('level-title').textContent = data.title;
                 
-                // Рендерим описание с учетом ловушек против ИИ (если сервер передал raw HTML)
                 const descEl = document.getElementById('level-desc');
                 descEl.style.visibility = 'visible';
                 descEl.innerHTML = data.desc;
@@ -222,18 +212,18 @@
                 document.getElementById('attempt-counter').textContent = "0";
                 document.getElementById('hint-box').classList.remove('visible');
 
-                if (data.type === "DYNAMIC") {
-                    // Прячем стандартный текст и запускаем деформированный Canvas-капчу для времени
+                // Если уровень принадлежит Сектору Ада (с 16 по 22), рендерим зашумленный холст
+                if (data.isHellSector && data.type !== "KINETIC") {
                     descEl.style.visibility = 'hidden';
                     canvas.style.display = 'block';
-                    canvas.style.pointerEvents = 'none';
-                    setupDynamicCaptcha(data.rawDescText);
-                } else if (data.type === "CLICKER") {
-                    inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block';
-                    setupClicker();
-                } else if (data.type === "CANVAS") {
-                    inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.display = 'block';
-                    setupCanvas();
+                    if (data.type === "CLICKER") {
+                        inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block';
+                        setupClicker();
+                    } else if (data.type === "CANVAS") {
+                        inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.pointerEvents = 'auto';
+                        setupCanvas();
+                    }
+                    setupDynamicCaptcha(data.rawDescText, data.type === "DYNAMIC");
                 } else if (data.type === "KINETIC") {
                     canvas.style.display = 'block'; canvas.style.pointerEvents = 'none'; 
                     setupKineticGhost();
@@ -243,52 +233,73 @@
             } catch (err) { console.error(err); }
         }
 
-        // Рендеринг зашумленного текста на Canvas (для LEVEL 18)
-        function setupDynamicCaptcha(baseText) {
+        // Рендеринг зашумленного анимированного Canvas-текста (Сектор Ада)
+        function setupDynamicCaptcha(baseText, appendTime = false) {
             const canvas = document.getElementById('void-canvas');
             const ctx = canvas.getContext('2d');
+            
+            // Если включен свайп (CANVAS), холст должен занимать весь экран, иначе — фиксированную область
             canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 200; // фиксированная высота под капчу
+            canvas.height = serverLevelData.type === "CANVAS" ? canvas.parentElement.clientHeight : 220;
 
-            function drawCaptcha() {
-                ctx.fillStyle = '#0c0c0e';
+            function drawFrame() {
+                if (!serverLevelData || !serverLevelData.isHellSector) return;
+                
+                // Если тип CANVAS (свайп), не очищаем фон полностью до черноты во время рисования игроком
+                ctx.fillStyle = 'rgba(12, 12, 14, 0.3)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Случайные линии-помехи
-                for (let i = 0; i < 12; i++) {
-                    ctx.strokeStyle = Math.random() > 0.5 ? '#bc9855' : '#18181b';
-                    ctx.lineWidth = Math.random() * 2;
+                // Отрисовка статических/динамических линий-помех
+                for (let i = 0; i < 15; i++) {
+                    ctx.strokeStyle = Math.random() > 0.4 ? '#bc9855' : '#18181b';
+                    ctx.lineWidth = Math.random() * 1.5;
                     ctx.beginPath();
                     ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
                     ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
                     ctx.stroke();
                 }
 
-                // Шум (точки)
-                for (let i = 0; i < 400; i++) {
-                    ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.3})`;
+                // Точечный шум
+                for (let i = 0; i < 350; i++) {
+                    ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.25})`;
                     ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.5, 1.5);
                 }
 
-                // Рендеринг текста со случайным смещением букв (Капча-эффект)
-                ctx.fillStyle = '#e4e4e7';
-                ctx.font = 'bold 18px "Courier New"';
-                
-                const now = new Date();
-                const timeString = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-                const fullText = baseText + " " + timeString;
-
-                let startX = 20;
-                for (let n = 0; n < fullText.length; n++) {
-                    let letter = fullText[n];
-                    let yOffset = Math.sin(n + now.getSeconds()) * 4; // Буквы плавно качаются
-                    ctx.fillText(letter, startX, 80 + yOffset);
-                    startX += ctx.measureText(letter).width + (Math.random() * 1.5);
+                // Формируем финальный текст задания
+                let textToRender = baseText;
+                if (appendTime) {
+                    const now = new Date();
+                    textToRender += " " + String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
                 }
+
+                // Настройки шрифта
+                ctx.fillStyle = '#e4e4e7';
+                ctx.font = textToRender.length > 20 ? 'bold 15px "Courier New"' : 'bold 22px "Courier New"';
+                ctx.textAlign = 'center';
+
+                const time = performance.now();
+                
+                // Эффект тряски и вибрации букв отдельно друг от друга
+                const words = textToRender.split('\n');
+                words.forEach((line, lineIdx) => {
+                    let currentY = 80 + (lineIdx * 35);
+                    let startX = canvas.width / 2 - (ctx.measureText(line).width / 2);
+                    
+                    for (let n = 0; n < line.length; n++) {
+                        let letter = line[n];
+                        // Комбинация быстрой тряски (Math.random) и плавных волн (Math.sin)
+                        let shakeY = Math.sin(time * 0.01 + n) * 3.5 + (Math.random() * 2 - 1);
+                        let shakeX = Math.cos(time * 0.01 + n) * 1.5 + (Math.random() * 1.5 - 0.75);
+                        
+                        ctx.fillText(letter, startX + shakeX, currentY + shakeY);
+                        startX += ctx.measureText(letter).width;
+                    }
+                });
+
+                captchaAnimationFrameId = requestAnimationFrame(drawFrame);
             }
 
-            drawCaptcha();
-            captchaIntervalId = setInterval(drawCaptcha, 1000);
+            drawFrame();
         }
 
         async function sendAnswerToServer(answerString, rawData = null) {
@@ -356,13 +367,11 @@
         function setupCanvas() {
             const canvas = document.getElementById('void-canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
             let drawing = false;
 
             canvas.onmousedown = canvas.ontouchstart = (e) => { e.preventDefault(); drawing = true; strokePoints = []; };
             canvas.onmouseup = canvas.ontouchend = async (e) => { 
-                e.preventDefault(); drawing = false; ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                e.preventDefault(); drawing = false; 
                 if (strokePoints.length > 3) {
                     await sendAnswerToServer(null, { points: strokePoints, width: canvas.width });
                 }
@@ -372,7 +381,13 @@
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX);
                 const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                strokePoints.push({ x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) });
+                
+                const pt = { x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) };
+                strokePoints.push(pt);
+                
+                // Визуальный след рисования поверх капчи
+                ctx.fillStyle = '#bc9855';
+                ctx.fillRect(pt.x, pt.y, 4, 4);
             };
         }
 
