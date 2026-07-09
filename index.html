@@ -206,22 +206,22 @@
                 document.getElementById('attempt-counter').textContent = "0";
                 document.getElementById('hint-box').classList.remove('visible');
 
-                // Уровень 19 (КЛИКЕР) по твоему массиву
+                // Уровень 19 (КЛИКЕР)
                 if (currentLevelIndex === 18) {
                     inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block';
                     setupClicker();
                 }
 
-                // Уровень 20 (СВАЙП) по твоему массиву
+                // Уровень 20 (СВАЙП)
                 if (currentLevelIndex === 19) {
                     inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.display = 'block';
                     setupCanvas();
                 }
 
-                // СЕКТОР АДА (16 - 23 уровни): включаем холст помех поверх или под текстом
+                // Включаем холст помех на всех уровнях Сектора Ада (кроме холста рисования на 20-м)
                 if (currentLevelIndex >= 15 && currentLevelIndex !== 19) { 
                     canvas.style.display = 'block';
-                    canvas.style.pointerEvents = 'none'; // Чтобы холст не мешал взаимодействовать с инпутом и кнопками
+                    canvas.style.pointerEvents = 'none'; 
                     setupKineticGhost();
                 }
 
@@ -323,82 +323,78 @@
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight; 
 
-            const matrixCoefficients = serverLevelData?.matrixCoefficients || [];
-            const letterGroups = serverLevelData?.letterGroups || [];
-
-            const lines = [];
-            if (matrixCoefficients.length) {
-                for (let i = 0; i < matrixCoefficients.length; i += 4) {
-                    lines.push([
-                        ((matrixCoefficients[i] ^ 170) / 1000) * canvas.width,
-                        ((matrixCoefficients[i+1] ^ 170) / 1000) * canvas.height,
-                        ((matrixCoefficients[i+2] ^ 170) / 1000) * canvas.width,
-                        ((matrixCoefficients[i+3] ^ 170) / 1000) * canvas.height
-                    ]);
-                }
-            }
-
-            function getFieldDistance(x, y, activeGroup, xOffset) {
-                let m = Infinity;
-                for (let i = 0; i < activeGroup.length; i++) {
-                    const lineIdx = activeGroup[i];
-                    if (!lines[lineIdx]) continue;
-                    const [x1_base, y1, x2_base, y2] = lines[lineIdx];
-                    const x1 = x1_base + xOffset, x2 = x2_base + xOffset;
-                    const A = x - x1, B = y - y1, C = x2 - x1, D = y2 - y1;
-                    const dot = A * C + B * D, len = C * C + D * D;
-                    let p = -1; if (len !== 0) p = dot / len;
-                    let xx, yy;
-                    if (p < 0) { xx = x1; yy = y1; } else if (p > 1) { xx = x2; yy = y2; } else { xx = x1 + p * C; yy = y1 + p * D; }
-                    const dist = Math.sqrt((x - xx)**2 + (y - yy)**2);
-                    if (dist < m) m = dist;
-                }
-                return m;
-            }
+            // Четко заданные буквы слова VORTEX для 23 уровня
+            const letters = ["V", "O", "R", "T", "E", "X"];
 
             function processFrame() {
                 if (currentLevelIndex < 15) return;
 
+                // Очищаем экран с легким хвостом затухания
                 ctx.fillStyle = 'rgba(12, 12, 14, 0.2)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 const time = performance.now();
 
-                // Проверяем: если это ПОСЛЕДНИЙ уровень (23 уровень, индекс 22 в JS)
+                // Проверяем: если это 23 уровень (индекс 22 в коде)
                 if (currentLevelIndex === 22) {
-                    if (!letterGroups.length) return;
-                    const interval = 2000;
-                    const currentLetterIdx = Math.floor((time / interval) % letterGroups.length);
-                    const activeGroup = letterGroups[currentLetterIdx];
-                    const progress = (time % interval) / interval;
-                    const xOffset = (0.5 - progress) * 80; const density = 3000; 
+                    const interval = 3000; // Твои заветные 3 секунды!
+                    const currentLetterIdx = Math.floor((time / interval) % letters.length);
+                    
+                    // Отрисовка прямоугольников с буквами слева направо
+                    const totalLetters = letters.length;
+                    const rectWidth = 50;
+                    const rectHeight = 60;
+                    const gap = 15;
+                    
+                    // Центрируем всю конструкцию на канвасе
+                    const totalWidth = (rectWidth * totalLetters) + (gap * (totalLetters - 1));
+                    const startX = (canvas.width - totalWidth) / 2;
+                    const startY = (canvas.height - rectHeight) / 2 - 20;
 
-                    for (let i = 0; i < density; i++) {
-                        const x = Math.random() * canvas.width; const y = Math.random() * canvas.height;
-                        const d = getFieldDistance(x, y, activeGroup, xOffset);
-                        let a = Math.random() * 0.12;
+                    for (let i = 0; i < totalLetters; i++) {
+                        const x = startX + i * (rectWidth + gap);
+                        
+                        if (i === currentLetterIdx) {
+                            // Активный прямоугольник (мерцает и показывает букву)
+                            ctx.strokeStyle = '#bc9855';
+                            ctx.lineWidth = 2;
+                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            
+                            // Заливка шумом внутри активного окна
+                            for (let s = 0; s < 40; s++) {
+                                ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.7})`;
+                                ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2);
+                            }
 
-                        if (d < 8) {
-                            const wave = Math.sin(time * 0.008 + (x * 0.03));
-                            if (wave > -0.3) a = 0.6 + Math.random() * 0.4; else a = Math.random() * 0.05;
+                            // Вывод буквы
+                            ctx.fillStyle = '#fff';
+                            ctx.font = 'bold 28px "Courier New"';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            // Небольшой глитч-эффект сдвига для антуража
+                            const glitchX = Math.random() * 4 - 2;
+                            ctx.fillText(letters[i], x + (rectWidth / 2) + glitchX, startY + (rectHeight / 2));
+                        } else {
+                            // Неактивные прямоугольники (просто пустые тусклые рамки)
+                            ctx.strokeStyle = '#18181b';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
                         }
-                        ctx.fillStyle = `rgba(188, 152, 85, ${a})`; ctx.fillRect(x, y, 1.5, 1.5);
                     }
                 } else {
-                    // Режим СТАТИЧЕСКОГО АТМОСФЕРНОГО ШУМА для уровней 16-22
-                    for (let i = 0; i < 400; i++) {
+                    // Статический фоновый атмосферный шум для уровней 16-22 (текст остается читаемым!)
+                    for (let i = 0; i < 350; i++) {
                         const x = Math.random() * canvas.width;
                         const y = Math.random() * canvas.height;
                         const size = Math.random() * 1.5;
-                        const alpha = Math.random() * 0.15;
+                        const alpha = Math.random() * 0.12;
                         ctx.fillStyle = `rgba(188, 152, 85, ${alpha})`;
                         ctx.fillRect(x, y, size, size);
                     }
 
-                    // Редкие горизонтальные линии аналоговых помех (глитчи)
-                    if (Math.random() > 0.85) {
-                        ctx.fillStyle = 'rgba(188, 152, 85, 0.05)';
-                        ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 4);
+                    if (Math.random() > 0.88) {
+                        ctx.fillStyle = 'rgba(188, 152, 85, 0.04)';
+                        ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 3);
                     }
                 }
                 kineticAnimationFrameId = requestAnimationFrame(processFrame);
