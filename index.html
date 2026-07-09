@@ -141,7 +141,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-        import { getDatabase, ref, onValue, runTransaction, push, onDisconnect, set } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+        import { getDatabase, ref, onValue, push, onDisconnect, set } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkFTLYk0Jd02thV6DLEzB8hJF-B9IRx68",
@@ -159,12 +159,32 @@
         const connectedRef = ref(db, ".info/connected");
         const onlineUsersRef = ref(db, "online_users");
 
+        // Чтение количества лайков из БД по-прежнему доступно всем
         onValue(likesRef, (snap) => { document.getElementById('likes-count').innerText = snap.val() || 0; });
-        document.getElementById('like-btn').addEventListener('click', () => { runTransaction(likesRef, (c) => (c || 0) + 1); });
 
-        const myUserRef = push(onlineUsersRef);
-        onValue(connectedRef, (snap) => { if (snap.val() === true) { set(myUserRef, true); onDisconnect(myUserRef).remove(); } });
-        onValue(onlineUsersRef, (snap) => { document.getElementById('online-count').innerText = snap.numChildren(); });
+        // Безопасное добавление лайков через серверную ручку (DevTools защищен)
+        document.getElementById('like-btn').addEventListener('click', async () => {
+            try {
+                await fetch(`${API_URL}/addLike`, { method: 'POST' });
+            } catch (err) { console.error("Like tracking failed:", err); }
+        });
+
+        // ГАРАНТИРОВАННЫЙ ОНЛАЙН СИНХРОНИЗИРОВАННЫЙ С ВЕБ-СОКЕТОМ
+        let myUserRef = null;
+        onValue(connectedRef, (snap) => {
+            if (snap.val() === true) {
+                // Генерируем уникальный токен нахождения на сайте только после физического коннекта
+                myUserRef = push(onlineUsersRef);
+                set(myUserRef, true);
+                // Удаляем сессию при дисконнекте
+                onDisconnect(myUserRef).remove();
+            }
+        });
+
+        // Слушатель счетчика
+        onValue(onlineUsersRef, (snap) => {
+            document.getElementById('online-count').innerText = snap.numChildren() || 0;
+        });
 
         let currentLevelIndex = 0;
         let wrongAttempts = 0;
@@ -202,26 +222,22 @@
                 clickBtn.style.display = 'none'; ctrlBlock.style.display = 'flex';
                 canvas.style.display = 'none'; canvas.style.pointerEvents = 'auto'; 
                 
-                // Накапливаем попытки на 24 уровне (индекс 23) для работы формулы
                 if (currentLevelIndex !== 23) {
                     wrongAttempts = 0;
                     document.getElementById('attempt-counter').textContent = "0";
                 }
                 document.getElementById('hint-box').classList.remove('visible');
 
-                // Уровень 19 (КЛИКЕР)
                 if (currentLevelIndex === 18) {
                     inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block';
                     setupClicker();
                 }
 
-                // Уровень 20 (СВАЙП)
                 if (currentLevelIndex === 19) {
                     inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.display = 'block';
                     setupCanvas();
                 }
 
-                // Включаем холст помех на всех уровнях Сектора Ада (кроме холста рисования на 20-м)
                 if (currentLevelIndex >= 15 && currentLevelIndex !== 19) { 
                     canvas.style.display = 'block';
                     canvas.style.pointerEvents = 'none'; 
@@ -237,7 +253,6 @@
             if (inputField.style.display === 'none') return;
             if (inputField.value.trim() === "") return;
             
-            // Если это 24 уровень, подмешиваем текущие попытки в rawData
             if (currentLevelIndex === 23) {
                 await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
             } else {
@@ -342,7 +357,6 @@
 
                 const time = performance.now();
 
-                // 23 уровень (индекс 22 в JS) — сборка букв VORTEX
                 if (currentLevelIndex === 22) {
                     const interval = 3000;
                     const currentLetterIdx = Math.floor((time / interval) % letters.length);
@@ -382,7 +396,6 @@
                         }
                     }
                 } else {
-                    // Статический шум для уровней 16-22 и нового 24 уровня
                     for (let i = 0; i < 350; i++) {
                         const x = Math.random() * canvas.width;
                         const y = Math.random() * canvas.height;
