@@ -159,18 +159,17 @@
         const connectedRef = ref(db, ".info/connected");
         const onlineUsersRef = ref(db, "online_users");
 
-        // Слушатель лайков в реальном времени (сохраняются при обновлении)
         onValue(likesRef, (snap) => { 
             const serverLikes = snap.val() || 0;
             document.getElementById('likes-count').innerText = serverLikes; 
         });
 
-        // Безопасный клик лайка напрямую через Firebase транзакции + защита от накрутки
+
         document.getElementById('like-btn').addEventListener('click', async () => {
             const likeBtnEl = document.getElementById('like-btn');
             
             if (localStorage.getItem('aenigma_liked')) {
-                // Если пользователь уже нажимал лайк — кнопка затрясется
+
                 likeBtnEl.classList.add('shake');
                 setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
                 return;
@@ -179,12 +178,12 @@
             likeBtnEl.style.pointerEvents = 'none';
 
             try {
-                // Атомарная транзакция Firebase исключает баги конкурентных запросов
+
                 await runTransaction(likesRef, (currentValue) => {
                     return (currentValue || 0) + 1;
                 });
                 
-                // Фиксируем голос на клиенте
+
                 localStorage.setItem('aenigma_liked', 'true');
                 likeBtnEl.style.color = 'var(--accent)';
                 likeBtnEl.style.borderColor = 'var(--accent)';
@@ -197,13 +196,12 @@
             }
         });
 
-        // Если пользователь лайкал в прошлую сессию, подсвечиваем кнопку сразу
+
         if (localStorage.getItem('aenigma_liked')) {
             document.getElementById('like-btn').style.color = 'var(--accent)';
             document.getElementById('like-btn').style.borderColor = 'var(--accent)';
         }
 
-        // ГАРАНТИРОВАННЫЙ ОНЛАЙН СИНХРОНИЗИРОВАННЫЙ С ВЕБ-СОКЕТОМ
         let myUserRef = null;
         onValue(connectedRef, (snap) => {
             if (snap.val() === true) {
