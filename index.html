@@ -92,7 +92,7 @@
 
         <div id="start-screen" class="screen active">
             <h1>AENIGMA <span style="color: var(--accent);">[Mark 2.3]</span></h1>
-            <p>Welcome to the 23-level module. Levels 1-15 contain logical riddles. Levels 16-23 enter the "HELL SECTOR" -- ancient ciphers, raw interactive action, zero hints, minimal text. Neural networks cannot parse this sector. Good luck.</p>
+            <p>Welcome to the 24-level module. Levels 1-15 contain logical riddles. Levels 16-24 enter the "HELL SECTOR" -- ancient ciphers, raw interactive action, zero hints, minimal text. Neural networks cannot parse this sector. Good luck.</p>
             <button class="btn" onclick="window.startGame()">INITIALIZE</button>
         </div>
 
@@ -114,7 +114,7 @@
 
         <div id="victory-screen" class="screen">
             <h1>GOD MODE ENGAGED</h1>
-            <p>Unbelievable. You conquered all 23 layers, bypassing the anti-AI sector. You have proven absolute cognitive dominance over machine logic.</p>
+            <p>Unbelievable. You conquered all 24 layers, bypassing the anti-AI sector. You have proven absolute cognitive dominance over machine logic.</p>
             <div class="btn-container">
                 <button class="btn" id="restart-btn">RESTART MODULE</button>
                 <button class="btn secondary" id="share-btn">COPY SHARE LINK</button>
@@ -202,8 +202,11 @@
                 clickBtn.style.display = 'none'; ctrlBlock.style.display = 'flex';
                 canvas.style.display = 'none'; canvas.style.pointerEvents = 'auto'; 
                 
-                wrongAttempts = 0;
-                document.getElementById('attempt-counter').textContent = "0";
+                // Накапливаем попытки на 24 уровне (индекс 23) для работы формулы
+                if (currentLevelIndex !== 23) {
+                    wrongAttempts = 0;
+                    document.getElementById('attempt-counter').textContent = "0";
+                }
                 document.getElementById('hint-box').classList.remove('visible');
 
                 // Уровень 19 (КЛИКЕР)
@@ -229,6 +232,19 @@
             } catch (err) { console.error(err); }
         }
 
+        async function submitAnswer() {
+            const inputField = document.getElementById('user-answer');
+            if (inputField.style.display === 'none') return;
+            if (inputField.value.trim() === "") return;
+            
+            // Если это 24 уровень, подмешиваем текущие попытки в rawData
+            if (currentLevelIndex === 23) {
+                await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
+            } else {
+                await sendAnswerToServer(inputField.value);
+            }
+        }
+
         async function sendAnswerToServer(answerString, rawData = null) {
             try {
                 const response = await fetch(`${API_URL}/checkAnswer`, {
@@ -239,13 +255,6 @@
                 const result = await response.json();
                 if (result.success) triggerSuccess(); else triggerFail();
             } catch (err) { console.error(err); }
-        }
-
-        async function submitAnswer() {
-            const inputField = document.getElementById('user-answer');
-            if (inputField.style.display === 'none') return;
-            if (inputField.value.trim() === "") return;
-            await sendAnswerToServer(inputField.value);
         }
 
         function triggerSuccess() {
@@ -323,30 +332,26 @@
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight; 
 
-            // Четко заданные буквы слова VORTEX для 23 уровня
             const letters = ["V", "O", "R", "T", "E", "X"];
 
             function processFrame() {
                 if (currentLevelIndex < 15) return;
 
-                // Очищаем экран с легким хвостом затухания
                 ctx.fillStyle = 'rgba(12, 12, 14, 0.2)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 const time = performance.now();
 
-                // Проверяем: если это 23 уровень (индекс 22 в коде)
+                // 23 уровень (индекс 22 в JS) — сборка букв VORTEX
                 if (currentLevelIndex === 22) {
-                    const interval = 3000; // Твои заветные 3 секунды!
+                    const interval = 3000;
                     const currentLetterIdx = Math.floor((time / interval) % letters.length);
                     
-                    // Отрисовка прямоугольников с буквами слева направо
                     const totalLetters = letters.length;
                     const rectWidth = 50;
                     const rectHeight = 60;
                     const gap = 15;
                     
-                    // Центрируем всю конструкцию на канвасе
                     const totalWidth = (rectWidth * totalLetters) + (gap * (totalLetters - 1));
                     const startX = (canvas.width - totalWidth) / 2;
                     const startY = (canvas.height - rectHeight) / 2 - 20;
@@ -355,34 +360,29 @@
                         const x = startX + i * (rectWidth + gap);
                         
                         if (i === currentLetterIdx) {
-                            // Активный прямоугольник (мерцает и показывает букву)
                             ctx.strokeStyle = '#bc9855';
                             ctx.lineWidth = 2;
                             ctx.strokeRect(x, startY, rectWidth, rectHeight);
                             
-                            // Заливка шумом внутри активного окна
                             for (let s = 0; s < 40; s++) {
                                 ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.7})`;
                                 ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2);
                             }
 
-                            // Вывод буквы
                             ctx.fillStyle = '#fff';
                             ctx.font = 'bold 28px "Courier New"';
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
-                            // Небольшой глитч-эффект сдвига для антуража
                             const glitchX = Math.random() * 4 - 2;
                             ctx.fillText(letters[i], x + (rectWidth / 2) + glitchX, startY + (rectHeight / 2));
                         } else {
-                            // Неактивные прямоугольники (просто пустые тусклые рамки)
                             ctx.strokeStyle = '#18181b';
                             ctx.lineWidth = 1;
                             ctx.strokeRect(x, startY, rectWidth, rectHeight);
                         }
                     }
                 } else {
-                    // Статический фоновый атмосферный шум для уровней 16-22 (текст остается читаемым!)
+                    // Статический шум для уровней 16-22 и нового 24 уровня
                     for (let i = 0; i < 350; i++) {
                         const x = Math.random() * canvas.width;
                         const y = Math.random() * canvas.height;
