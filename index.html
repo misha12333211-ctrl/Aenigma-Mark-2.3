@@ -181,9 +181,20 @@
             }
         });
 
-        // Слушатель счетчика
+        // Безопасный слушатель счетчика онлайна с защитой от ошибок типов данных Firebase
         onValue(onlineUsersRef, (snap) => {
-            document.getElementById('online-count').innerText = snap.numChildren() || 0;
+            try {
+                const data = typeof snap.val === 'function' ? snap.val() : snap;
+                if (data) {
+                    const count = Object.keys(data).length;
+                    document.getElementById('online-count').innerText = count;
+                } else {
+                    document.getElementById('online-count').innerText = 0;
+                }
+            } catch (err) {
+                console.error("Online formatting fail fallback engaged:", err);
+                document.getElementById('online-count').innerText = 1;
+            }
         });
 
         let currentLevelIndex = 0;
