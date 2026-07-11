@@ -115,11 +115,9 @@
         <div id="victory-screen" class="screen">
             <h1>GOD MODE ENGAGED</h1>
             <p>Unbelievable. You conquered all 24 layers, bypassing the anti-AI sector. You have proven absolute cognitive dominance over machine logic.</p>
-            <div class="btn-container" style="flex-direction: column; align-items: center; gap: 15px;">
-                <div style="display: flex; gap: 15px; justify-content: center; width: 100%; flex-wrap: wrap;">
-                    <button class="btn" id="restart-btn">RESTART MODULE</button>
-                    <button class="btn secondary" id="share-btn">COPY SHARE LINK</button>
-                </div>
+            <div class="btn-container">
+                <button class="btn" id="restart-btn">RESTART MODULE</button>
+                <button class="btn secondary" id="share-btn">COPY SHARE LINK</button>
             </div>
             <div class="share-section">
                 <div class="stats">CHALLENGE YOUR FRIENDS:</div>
@@ -130,8 +128,6 @@
 
     <div id="success-modal" class="modal-overlay">
         <div class="modal-card">
-            <!-- Перенесенная статистика наверх модалки -->
-            <div class="stats" style="margin-bottom: 20px; font-weight: bold;">ON THIS LAYER: <strong id="modal-layer-online-count">0</strong></div>
             <h2>ACCESS GRANTED</h2>
             <p id="modal-message">...</p>
             <button class="btn" id="modal-continue-btn">CONTINUE</button>
@@ -141,13 +137,8 @@
     <footer>
         <div class="stats">TOTAL ONLINE: <strong id="online-count">0</strong></div>
         <div class="stats">ON THIS LAYER: <strong id="layer-online-count">0</strong></div>
-        <div class="stats">COMPLETED L24: <strong id="completed-24-count">0</strong></div>
+        <div class="stats">COMPLETED U24: <strong id="completed-24-count">0</strong></div>
         <button id="like-btn" class="like-btn">❤ SYSTEM_LIKES: <span id="likes-count">0</span></button>
-        
-        <!-- Кнопка доната Сбера в Футере -->
-        <a href="https://messenger.online.sberbank.ru/sl/kzEsbRgBZb6cf7Upy" target="_blank" style="text-decoration: none;">
-            <button class="like-btn" style="border-color: #22c55e; color: #22c55e; box-shadow: 0 0 10px rgba(34, 197, 94, 0.1);">⚡ SUPPORT PROJECT (DONATE)</button>
-        </a>
     </footer>
 
     <script type="module">
@@ -253,12 +244,10 @@
                 } 
                 document.getElementById('online-count').innerText = totalOnline;
                 document.getElementById('layer-online-count').innerText = layerOnline;
-                document.getElementById('modal-layer-online-count').innerText = layerOnline; // Синхронизация с модалкой
             } catch (err) {
                 console.error("Online formatting fail fallback engaged:", err);
                 document.getElementById('online-count').innerText = 1;
                 document.getElementById('layer-online-count').innerText = 1;
-                document.getElementById('modal-layer-online-count').innerText = 1;
             }
         });
 
@@ -296,8 +285,6 @@
                 if (currentLevelIndex !== 23) {
                     wrongAttempts = 0;
                     document.getElementById('attempt-counter').textContent = "0";
-                } else {
-                    document.getElementById('attempt-counter').textContent = wrongAttempts;
                 }
                 document.getElementById('hint-box').classList.remove('visible');
 
@@ -323,7 +310,8 @@
 
         async function submitAnswer() {
             const inputField = document.getElementById('user-answer');
-            if (!inputField || inputField.value.trim() === "") return;
+            if (inputField.style.display === 'none') return;
+            if (inputField.value.trim() === "") return;
             
             if (currentLevelIndex === 23) {
                 await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
@@ -340,15 +328,7 @@
                     body: JSON.stringify({ index: currentLevelIndex, answer: answerString, rawData: rawData })
                 });
                 const result = await response.json();
-                if (result.success) {
-                    if (currentLevelIndex === 23) {
-                        showVictoryScreen();
-                    } else {
-                        triggerSuccess();
-                    }
-                } else {
-                    triggerFail();
-                }
+                if (result.success) triggerSuccess(); else triggerFail();
             } catch (err) { console.error(err); }
         }
 
@@ -358,20 +338,10 @@
         }
 
         function triggerFail() {
-            wrongAttempts++; 
-            document.getElementById('attempt-counter').textContent = wrongAttempts;
-
-            // Тряска срабатывает ВСЕГДА при неверном ответе
-            const el = document.getElementById('user-answer').style.display !== 'none' 
-                ? document.getElementById('user-answer') 
-                : document.getElementById('clicker-node');
-            
-            el.classList.add('shake'); 
-            setTimeout(() => el.classList.remove('shake'), 400);
-
-            if (wrongAttempts >= 10 && currentLevelIndex < 15) {
-                document.getElementById('hint-box').classList.add('visible');
-            }
+            const el = document.getElementById('user-answer').style.display !== 'none' ? document.getElementById('user-answer') : document.getElementById('clicker-node');
+            el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400);
+            wrongAttempts++; document.getElementById('attempt-counter').textContent = wrongAttempts;
+            if (wrongAttempts >= 10 && currentLevelIndex < 15) document.getElementById('hint-box').classList.add('visible');
         }
 
         function nextLevel() {
@@ -379,13 +349,18 @@
             currentLevelIndex++; loadLevelFromServer();
         }
 
-        function showVictoryScreen() {
+        async function showVictoryScreen() {
             document.getElementById('void-canvas').style.display = 'none';
             document.getElementById('clicker-node').style.display = 'none';
             document.getElementById('game-screen').classList.remove('active');
             document.getElementById('victory-screen').classList.add('active');
             generateQR();
+            
             window.updateMyLevelStatus(99); 
+            
+            try {
+                await fetch(`${API_URL}/addCompleted24`, { method: 'POST' });
+            } catch(e) { console.error("Failed to log victory to server", e); }
         }
 
         function setupClicker() {
