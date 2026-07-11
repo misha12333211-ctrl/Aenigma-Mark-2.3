@@ -24,10 +24,9 @@
             user-select: none; 
         }
         
-        /* Изменено для идеального центрирования игры и отжима футера вниз */
         body {
             background-color: var(--bg-color); color: var(--text-main); min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center; padding: 40px 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 40px 20px;
             overflow-x: hidden; overflow-y: auto; position: relative;
         }
         
@@ -41,15 +40,15 @@
         .chat-toggle-btn:hover { background: var(--accent); color: var(--bg-color); }
         .chat-toggle-btn svg { width: 24px; height: 24px; fill: currentColor; }
 
-        header { width: 100%; max-width: 700px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; padding-right: 55px; }
+        header { width: 100%; max-width: 700px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; padding-right: 55px; flex-shrink: 0; }
         .stats { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px; }
         .stats strong { color: var(--accent); }
         
-        /* Главный контейнер игры теперь занимает все доступное пространство и центрирует main */
+        /* ПУНКТ 2: Идеальное центрирование игрового блока */
         main {
             width: 100%; max-width: 600px; background: var(--card-bg); border: 1px solid var(--border);
             padding: 50px 40px; border-radius: 2px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); text-align: center; position: relative;
-            margin: auto 0; /* Автоматические отступы сверху и снизу выравнивают блок строго по центру */
+            margin: 40px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;
         }
         .screen { display: none; }
         .screen.active { display: block; }
@@ -97,12 +96,12 @@
         .qr-frame { background: #fff; padding: 10px; border-radius: 4px; width: 170px; height: 170px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
         .qr-frame img { width: 150px; height: 150px; }
         
-        /* Футер и лайки отодвигаются вниз */
-        .game-info-container { width: 100%; max-width: 700px; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: auto; padding-top: 40px; }
+        .game-info-container { width: 100%; max-width: 700px; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; padding-top: 20px; flex-shrink: 0; }
         
+        /* ПУНКТ 3: Отступ снизу после копирайта */
         footer { 
-            width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
-            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+            width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; padding-bottom: 35px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
+            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; flex-shrink: 0;
         }
         .footer-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
         .footer-link:hover { color: var(--accent); }
@@ -118,7 +117,6 @@
         }
         .donate-btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px rgba(188, 152, 85, 0.4); }
 
-        /* Модалка ЧАТА */
         .chat-modal-card { background: var(--card-bg); border: 1px solid var(--accent); width: 95%; max-width: 500px; height: 80vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(188, 152, 85, 0.15); }
         .chat-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .chat-header h3 { font-size: 1rem; color: var(--accent); letter-spacing: 2px; }
@@ -168,10 +166,10 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
 
         @media (max-width: 600px) {
-            body { padding: 20px 15px; }
-            main { margin: auto 0; padding: 40px 20px; }
-            .game-info-container { margin-top: auto; padding-top: 30px; }
-            footer { margin-top: 15px; padding-top: 20px; }
+            body { padding: 20px 15px; justify-content: flex-start; }
+            main { margin: 20px 0; padding: 40px 20px; }
+            .game-info-container { padding-top: 15px; }
+            footer { margin-top: 10px; padding-top: 15px; padding-bottom: 25px; }
             .chat-top-right-container { top: 15px; right: 15px; }
         }
     </style>
@@ -236,7 +234,6 @@
         </div>
     </div>
 
-    <!-- Пункт 6: Модальное окно предупреждения для чата -->
     <div id="chat-warning-modal" class="modal-overlay">
         <div class="modal-card" style="border-color: var(--error);">
             <h2 style="color: #ef4444;">⚠️ SYSTEM WARNING</h2>
@@ -245,7 +242,6 @@
         </div>
     </div>
 
-    <!-- Модалка основного ЧАТА -->
     <div id="chat-modal" class="modal-overlay">
         <div class="chat-modal-card">
             <div class="chat-header">
@@ -268,7 +264,6 @@
         </div>
     </div>
 
-    <!-- Модалка ИЗМЕНЕНИЯ сообщения -->
     <div id="chat-edit-modal" class="modal-overlay">
         <div class="modal-card chat-dialog-card">
             <h3>EDIT MESSAGE</h3>
@@ -280,7 +275,6 @@
         </div>
     </div>
 
-    <!-- Модалка УДАЛЕНИЯ сообщения -->
     <div id="chat-delete-modal" class="modal-overlay">
         <div class="modal-card chat-dialog-card" style="border-color: var(--error);">
             <h3 style="color: #ef4444;">DELETE MESSAGE?</h3>
@@ -292,7 +286,6 @@
         </div>
     </div>
 
-    <!-- Модалка ЖАЛОБЫ (Переписано исправление отправки) -->
     <div id="chat-report-modal" class="modal-overlay">
         <div class="modal-card chat-dialog-card" style="border-color: #f59e0b;">
             <h3 style="color: #f59e0b;">SUBMIT REPORT</h3>
@@ -304,13 +297,12 @@
         </div>
     </div>
 
-    <!-- Модалка ЖЁСТКИХ ПРАВИЛ чата -->
     <div id="rules-modal" class="modal-overlay">
         <div class="text-modal-card">
             <h2>AENIGMA CHAT PROTOCOL & RULES</h2>
             <p><strong>Внимание оператора!</strong> Внутрисистемный шлюз общения находится под строгим контролем автоматических алгоритмов. Нарушение следующих правил приведет к перманентной блокировке сетевого ID:</p>
             <ul>
-                <li><strong>1. Запрет политики и конфликтов:</strong> Строго табуированы любые обсуждения политических событий, упоминания войн, лидеров государств и агрессивный национализм на любом языке мира.</li>
+                <li><strong>1. Запрет политики и конфликтов:</strong> Строго табуированы любые обсуждения политических событий, упоминания войн, лидеров государств (президентов), названий стран и агрессивный национализм на любом языке мира.</li>
                 <li><strong>2. Запрет рекламы и спама:</strong> Запрещена отправка ссылок, кодов, приглашений, спам-рассылок и рекламы сторонних ресурсов.</li>
                 <li><strong>3. Личные данные:</strong> Запрещен ввод номеров телефонов, адресов, аккаунтов мессенджеров, email и иной конфиденциальной информации.</li>
                 <li><strong>4. Графический и Юникод спам:</strong> Запрещены любые символы кроме латиницы, кириллицы, цифр и знаков: ?, !, . и ,. Все символы Юникода (включая эмодзи) запрещены.</li>
@@ -322,7 +314,6 @@
         </div>
     </div>
 
-    <!-- Модалка ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ -->
     <div id="privacy-modal" class="modal-overlay">
         <div class="text-modal-card">
             <h2>PRIVACY POLICY // AENIGMA MARK 2.3</h2>
@@ -382,18 +373,28 @@
         let serverLevelData = null;
         let myUserRef = null;
 
-        // Пароль модератора (пункт 4)
-        const ADMIN_PASSWORD = "mySecretAdminPassword123"; 
+        // ПУНКТ 1: Старый текстовый пароль полностью удален из фронтенда. Проверка идет через сервер.
         let isModerator = localStorage.getItem('is_admin') === 'true';
 
-        // Проверка параметров URL на админа (?mod=пароль)
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mod') === ADMIN_PASSWORD) {
-            isModerator = true;
-            localStorage.setItem('is_admin', 'true');
+        const potentialPassword = urlParams.get('mod');
+        if (potentialPassword) {
+            fetch(`${API_URL}/adminLogin`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: potentialPassword })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    isModerator = true;
+                    localStorage.setItem('is_admin', 'true');
+                    localStorage.setItem('admin_token', potentialPassword); 
+                    window.location.search = ""; 
+                }
+            }).catch(e => console.error(e));
         }
 
-        // Пункт 3: Постоянный, неизменяемый ID пользователя для чата
         let myUserId = localStorage.getItem('chat_uid');
         if (!myUserId) {
             myUserId = 'id_' + Math.floor(100000 + Math.random() * 900000);
@@ -692,7 +693,6 @@
             window.updateMyLevelStatus(-1);
         }
 
-        // --- ЛОГИКА ЧАТА, ТАЙМЕРА И МОДАЛОК ---
         const openChatBtn = document.getElementById('chat-toggle-btn');
         const chatModal = document.getElementById('chat-modal');
         const closeChatBtn = document.getElementById('chat-close-btn');
@@ -718,39 +718,45 @@
         document.getElementById('privacy-open-btn').onclick = () => privacyModal.classList.add('active');
         document.getElementById('privacy-close-btn').onclick = () => privacyModal.classList.remove('active');
 
-        // Пункты 5, 6, 7: Жёсткая фронтенд-валидация текста сообщений и никнеймов
         function triggerWarningModal(reasonText) {
             document.getElementById('chat-warning-message').innerText = reasonText;
             chatWarningModal.classList.add('active');
         }
 
+        // ПУНКТЫ 5 и 6: Клиентская валидация на любые запрещенные слова, страны, рекламу и личные данные
         function validateText(text) {
             const trimmed = text.trim();
-            if (!trimmed) return { valid: false, reason: "Сообщение не может быть пустым." };
+            if (!trimmed) return { valid: false, reason: "Поле ввода не может быть пустым." };
 
-            // Пункт 5: Ограничение до 40 слов
-            const wordCount = trimmed.split(/\s+/).filter(w => w.length > 0).length;
-            if (wordCount > 40) {
-                return { valid: false, reason: "Превышен лимит слов! Допускается не более 40 слов." };
+            const words = trimmed.split(/\s+/).filter(w => w.length > 0);
+            if (words.length > 40) {
+                return { valid: false, reason: "Превышен лимит слов! Разрешено не более 40 слов." };
             }
 
-            // Пункт 7: Разрешены ТОЛЬКО буквы любых языков, цифры, пробелы и знаки ?, !, ., ,
-            // Полный запрет суррогатных пар Юникода, спецсимволов, эмодзи и управляющих кодов
+            // Допускаются только буквы всех алфавитов, цифры, пробелы и знаки пунктуации ?, !, ., ,
             const strictSymbolsRegex = /^[a-zA-Z0-9а-яА-ЯёЁ\s?!.,]+$/;
             if (!strictSymbolsRegex.test(trimmed)) {
-                return { valid: false, reason: "Обнаружены запрещенные символы! Разрешены только буквы, цифры и знаки: ?, !, ., ," };
+                return { valid: false, reason: "Обнаружены запрещенные символы или эмодзи! Разрешены только буквы, цифры и знаки: ?, !, ., ," };
             }
 
-            // Пункт 7: Запретить указывать адреса, ссылки, почту и любую личную информацию
-            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-            const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9-]+\.(com|ru|net|org|io|gov|edu|info|biz|xyz))/i;
-            const phoneRegex = /(\+?\d{1,4}?[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/;
-            
-            if (emailRegex.test(trimmed) || urlRegex.test(trimmed)) {
-                return { valid: false, reason: "Обнаружена запрещенная информация: передача ссылок и e-mail адресов строго табуирована." };
+            // Пул запрещенных политических имен, стран, матов и рекламы
+            const blacklistedKeywords = [
+                /эрдоган/i, /erdogan/i, /путин/i, /putin/i, /зеленск/i, /zelensk/i, /байден/i, /biden/i, /трамп/i, /trump/i,
+                /россия/i, /russia/i, /украин/i, /ukrain/i, /сша/i, /usa/i, /турция/i, /turkey/i, /политика/i, /politic/i,
+                /война/i, /war/i, /хуй/i, /пизд/i, /ебл/i, /ебат/i, /сук/i, /блять/i, /blyat/i, /fuck/i, /bitch/i,
+                /http/i, /www\./i, /\.com/i, /\.ru/i, /\.net/i, /\.org/i, /\.io/i, /telegram/i, /viber/i, /whatsapp/i
+            ];
+
+            for (let regex of blacklistedKeywords) {
+                if (regex.test(trimmed)) {
+                    return { valid: false, reason: "Контент содержит запрещенную информацию (политику, мат, рекламу, ссылки или личные данные)." };
+                }
             }
-            if (phoneRegex.test(trimmed)) {
-                return { valid: false, reason: "Обнаружена конфиденциальная информация: публикация номеров телефонов запрещена." };
+
+            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+            const phoneRegex = /(\+?\d{1,4}?[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/;
+            if (emailRegex.test(trimmed) || phoneRegex.test(trimmed)) {
+                return { valid: false, reason: "Публикация личной информации, e-mail и номеров телефонов строго запрещена." };
             }
 
             return { valid: true };
@@ -763,10 +769,11 @@
                 myNickname = val;
                 localStorage.setItem('chat_nick', myNickname);
                 nickInput.style.borderColor = 'var(--border)';
+                alert("Никнейм изменен.");
             } else {
                 nickInput.classList.add('shake');
                 setTimeout(() => nickInput.classList.remove('shake'), 400);
-                triggerWarningModal(check.reason || "Никнейм должен быть от 3 до 16 символов.");
+                triggerWarningModal(check.reason || "Никнейм должен содержать от 3 до 16 валидных символов.");
             }
         });
 
@@ -803,7 +810,6 @@
             const msgText = chatMsgInput.value.trim();
             const check = validateText(msgText);
             
-            // Если сообщение не проходит жесткую валидацию
             if (!check.valid) {
                 chatMsgInput.classList.add('shake');
                 setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
@@ -814,7 +820,6 @@
             isChatSendingLocked = true; 
 
             try {
-                // Бэкенд-проверка на бан и валидность
                 const res = await fetch(`${API_URL}/validateChatMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -823,7 +828,7 @@
                 const data = await res.json();
                 
                 if (data.banned) {
-                    triggerWarningModal("Ваш сетевой ID заблокирован модератором за несоблюдение правил.");
+                    triggerWarningModal("Ваш ID заблокирован за нарушение правил.");
                     isChatSendingLocked = false;
                     return;
                 }
@@ -831,7 +836,7 @@
                 if (!data.valid) {
                     chatMsgInput.classList.add('shake');
                     setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
-                    triggerWarningModal("Сообщение отклонено сервером безопасности.");
+                    triggerWarningModal("Сообщение заблокировано фильтром безопасности.");
                     isChatSendingLocked = false;
                     return;
                 }
@@ -869,7 +874,6 @@
             displayMsgs.forEach(msg => {
                 const block = document.createElement('div');
                 block.className = 'chat-msg-block';
-                // Пункт 3: В интерфейс добавлен вывод ID пользователя
                 block.innerHTML = `
                     <div class="chat-msg-meta"><strong>${msg.nickname}</strong> [ID: ${msg.uid}] [LVL ${msg.level}]:</div>
                     <div class="chat-msg-text">${msg.text}</div>
@@ -899,7 +903,7 @@
                     actionsContainer.appendChild(reportLink);
                 }
 
-                // Пункт 4: Если пользователь — модератор, рендерим админ-панель для удаления и банов
+                // ПУНКТ 1: Модерация использует безопасный токен сессии из localStorage
                 if (isModerator) {
                     const adminDeleteLink = document.createElement('span');
                     adminDeleteLink.className = 'chat-action-link admin-link';
@@ -921,7 +925,6 @@
             chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
         });
 
-        // Админские функции модератора (пункт 4)
         async function adminDeleteMessage() {
             if (!activeTargetMsgId) return;
             try {
@@ -932,13 +935,14 @@
         async function adminBanUser(targetUid) {
             if (!confirm(`Заблокировать пользователя ${targetUid} навсегда?`)) return;
             try {
+                const token = localStorage.getItem('admin_token');
                 await fetch(`${API_URL}/adminBanUser`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetUid, adminPassword: ADMIN_PASSWORD })
+                    body: JSON.stringify({ targetUid, adminPassword: token })
                 });
-                alert(`Пользователь ${targetUid} забанен. Все его сообщения будут отклоняться.`);
-            } catch(e) { console.error(e); }
+                alert(`Пользователь ${targetUid} успешно забанен.`);
+            } catch(e) { alert("Ошибка при блокировке."); }
         }
 
         function openEditDialog(id, currentText) {
@@ -951,7 +955,7 @@
             const input = document.getElementById('chat-edit-input');
             const newText = input.value.trim();
             const check = validateText(newText);
-            if (newText.length >= 3 && check.valid) {
+            if (newText.length >= 1 && check.valid) {
                 try {
                     const res = await fetch(`${API_URL}/validateChatMessage`, {
                         method: 'POST',
@@ -969,7 +973,7 @@
                 } catch(e) {}
             } else {
                 input.classList.add('shake'); setTimeout(() => input.classList.remove('shake'), 400);
-                triggerWarningModal(check.reason || "Текст не валиден.");
+                triggerWarningModal(check.reason || "Текст сообщения невалиден.");
             }
         };
 
@@ -992,7 +996,7 @@
         }
         document.getElementById('chat-report-cancel').onclick = () => reportModal.classList.remove('active');
         
-        // Пункт 2: Полностью исправленная и защищенная отправка жалобы через серверный прокси-шлюз
+        // ПУНКТ 4: Исправленная отправка жалобы через шлюз API на NodeJS
         document.getElementById('chat-report-confirm').onclick = async () => {
             if(!reportData) return;
             const confirmBtn = document.getElementById('chat-report-confirm');
@@ -1012,11 +1016,11 @@
                 if(data.success) {
                     alert("Жалоба успешно отправлена модераторам.");
                 } else {
-                    alert("Ошибка отправки жалобы.");
+                    alert("Ошибка при обработке запроса сервером.");
                 }
             } catch(e) {
-                console.error("Report transmission failed", e);
-                alert("Не удалось связаться с сервером отправки репортов.");
+                console.error(e);
+                alert("Не удалось связаться с сервером.");
             } finally {
                 confirmBtn.disabled = false;
                 reportModal.classList.remove('active');
