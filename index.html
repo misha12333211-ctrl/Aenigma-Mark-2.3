@@ -57,9 +57,6 @@
         
         #void-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: crosshair; display: none; touch-action: none; }
         
-        .antiai-trap {
-            position: absolute; overflow: hidden; clip: rect(0, 0, 0, 0); width: 1px; height: 1px; margin: -1px; color: transparent; background: transparent;
-        }
         .hint-box { display: none; margin-top: 40px; padding-top: 20px; border-top: 1px dashed var(--border); color: var(--text-muted); font-size: 0.8rem; text-align: left; position: relative; z-index: 20; }
         .hint-box.visible { display: block; }
         .modal-overlay {
@@ -97,7 +94,6 @@
         </div>
 
         <div id="game-screen" class="screen">
-            <!-- Счётчик перенесен в верхнюю часть карточки уровня -->
             <div class="stats" style="margin-bottom: 20px; font-weight: bold; text-align: center; position: relative; z-index: 20;">ON THIS LAYER: <strong id="layer-online-count">0</strong></div>
             
             <h1 id="level-title">LEVEL X</h1>
@@ -133,7 +129,6 @@
 
     <div id="success-modal" class="modal-overlay">
         <div class="modal-card">
-            <!-- Счётчик отсюда удален по вашей просьбе -->
             <h2>ACCESS GRANTED</h2>
             <p id="modal-message">...</p>
             <button class="btn" id="modal-continue-btn">CONTINUE</button>
@@ -145,7 +140,6 @@
         <div class="stats">COMPLETED L24: <strong id="completed-24-count">0</strong></div>
         <button id="like-btn" class="like-btn">❤ SYSTEM_LIKES: <span id="likes-count">0</span></button>
         
-        <!-- Кнопка доната Сбера в Футере -->
         <a href="https://messenger.online.sberbank.ru/sl/kzEsbRgBZb6cf7Upy" target="_blank" style="text-decoration: none;">
             <button class="like-btn" style="border-color: #22c55e; color: #22c55e; box-shadow: 0 0 10px rgba(34, 197, 94, 0.1);">⚡ SUPPORT PROJECT (DONATE)</button>
         </a>
@@ -191,27 +185,20 @@
 
         document.getElementById('like-btn').addEventListener('click', async () => {
             const likeBtnEl = document.getElementById('like-btn');
-            
             if (localStorage.getItem('aenigma_liked')) {
+                likeBtnEl.classList.remove('shake');
+                void likeBtnEl.offsetWidth;
                 likeBtnEl.classList.add('shake');
-                setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
                 return;
             }
-
             likeBtnEl.style.pointerEvents = 'none';
-
             try {
-                await runTransaction(likesRef, (currentValue) => {
-                    return (currentValue || 0) + 1;
-                });
-                
+                await runTransaction(likesRef, (currentValue) => (currentValue || 0) + 1);
                 localStorage.setItem('aenigma_liked', 'true');
                 likeBtnEl.style.color = 'var(--accent)';
                 likeBtnEl.style.borderColor = 'var(--accent)';
             } catch (err) { 
-                console.error("Like transaction failed:", err);
-                likeBtnEl.classList.add('shake');
-                setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
+                console.error(err);
             } finally {
                 likeBtnEl.style.pointerEvents = 'auto';
             }
@@ -223,9 +210,7 @@
         }
 
         window.updateMyLevelStatus = function(levelIndex) {
-            if (myUserRef) {
-                set(myUserRef, { active: true, level: levelIndex });
-            }
+            if (myUserRef) set(myUserRef, { active: true, level: levelIndex });
         }
 
         onValue(connectedRef, (snap) => {
@@ -236,30 +221,18 @@
             }
         });
 
-        // Полностью исправленный обработчик счетчиков онлайна
         onValue(onlineUsersRef, (snap) => {
             try {
                 const data = snap.val();
-                let totalOnline = 0;
-                let layerOnline = 0;
-
+                let totalOnline = 0; let layerOnline = 0;
                 if (data) {
                     const users = Object.values(data);
                     totalOnline = users.length;
-                    
-                    users.forEach(user => {
-                        if (user && user.level === currentLevelIndex) {
-                            layerOnline++;
-                        }
-                    });
-                } else {
-                    totalOnline = 1;
-                    layerOnline = 1;
-                }
+                    users.forEach(user => { if (user && user.level === currentLevelIndex) layerOnline++; });
+                } else { totalOnline = 1; layerOnline = 1; }
                 document.getElementById('online-count').innerText = totalOnline;
                 document.getElementById('layer-online-count').innerText = layerOnline;
             } catch (err) {
-                console.error("Online formatting fail fallback engaged:", err);
                 document.getElementById('online-count').innerText = 1;
                 document.getElementById('layer-online-count').innerText = 1;
             }
@@ -273,14 +246,12 @@
 
         async function loadLevelFromServer() {
             if (kineticAnimationFrameId) { cancelAnimationFrame(kineticAnimationFrameId); kineticAnimationFrameId = null; }
-
             try {
                 const response = await fetch(`${API_URL}/getLevelData?index=${currentLevelIndex}`);
                 const data = await response.json();
 
                 if (data.finished) { showVictoryScreen(); return; }
                 serverLevelData = data;
-
                 window.updateMyLevelStatus(currentLevelIndex);
 
                 document.getElementById('level-title').textContent = data.title;
@@ -296,30 +267,23 @@
                 clickBtn.style.display = 'none'; ctrlBlock.style.display = 'flex';
                 canvas.style.display = 'none'; canvas.style.pointerEvents = 'auto'; 
                 
-                if (currentLevelIndex !== 23) {
-                    wrongAttempts = 0;
-                    document.getElementById('attempt-counter').textContent = "0";
-                } else {
-                    document.getElementById('attempt-counter').textContent = wrongAttempts;
-                }
+                // Всегда обнуляем попытки при инициализации нового уровня
+                wrongAttempts = 0;
+                document.getElementById('attempt-counter').textContent = "0";
                 document.getElementById('hint-box').classList.remove('visible');
 
                 if (currentLevelIndex === 18) {
                     inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block';
                     setupClicker();
                 }
-
                 if (currentLevelIndex === 19) {
                     inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.display = 'block';
                     setupCanvas();
                 }
-
                 if (currentLevelIndex >= 15 && currentLevelIndex !== 19) { 
-                    canvas.style.display = 'block';
-                    canvas.style.pointerEvents = 'none'; 
+                    canvas.style.display = 'block'; canvas.style.pointerEvents = 'none'; 
                     setupKineticGhost();
                 }
-
                 if (inputField.style.display !== 'none') inputField.focus();
             } catch (err) { console.error(err); }
         }
@@ -328,11 +292,9 @@
             const inputField = document.getElementById('user-answer');
             if (!inputField || inputField.value.trim() === "") return;
             
-            if (currentLevelIndex === 23) {
-                await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
-            } else {
-                await sendAnswerToServer(inputField.value);
-            }
+            // Надежный вариант из аудита: берем строго то, что видит пользователь на экране
+            const visibleAttempts = parseInt(document.getElementById('attempt-counter').textContent, 10) || 0;
+            await sendAnswerToServer(inputField.value, { currentAttempts: visibleAttempts });
         }
 
         async function sendAnswerToServer(answerString, rawData = null) {
@@ -344,11 +306,8 @@
                 });
                 const result = await response.json();
                 if (result.success) {
-                    if (currentLevelIndex === 23) {
-                        showVictoryScreen();
-                    } else {
-                        triggerSuccess();
-                    }
+                    if (currentLevelIndex === 23) showVictoryScreen();
+                    else triggerSuccess();
                 } else {
                     triggerFail();
                 }
@@ -368,8 +327,10 @@
                 ? document.getElementById('user-answer') 
                 : document.getElementById('clicker-node');
             
-            el.classList.add('shake'); 
-            setTimeout(() => el.classList.remove('shake'), 400);
+            // Исправление бага анимации из аудита (force reflow для сброса анимации)
+            el.classList.remove('shake');
+            void el.offsetWidth; 
+            el.classList.add('shake');
 
             if (wrongAttempts >= 10 && currentLevelIndex < 15) {
                 document.getElementById('hint-box').classList.add('visible');
@@ -394,17 +355,13 @@
             clickPattern = [];
             const clickBtn = document.getElementById('clicker-node');
             let lastClickTime = 0;
-            
             clickBtn.onmousedown = clickBtn.ontouchstart = (e) => { e.preventDefault(); lastClickTime = Date.now(); };
             clickBtn.onmouseup = clickBtn.ontouchend = async (e) => {
                 e.preventDefault();
                 const duration = Date.now() - lastClickTime;
                 clickPattern.push(duration);
                 if (clickPattern.length > 9) clickPattern.shift();
-                
-                if (clickPattern.length === 9) {
-                    await sendAnswerToServer(null, { timings: clickPattern });
-                }
+                if (clickPattern.length === 9) await sendAnswerToServer(null, { timings: clickPattern });
             };
         }
 
@@ -412,96 +369,60 @@
             const canvas = document.getElementById('void-canvas');
             const ctx = canvas.getContext('2d');
             let drawing = false;
-
             canvas.onmousedown = canvas.ontouchstart = (e) => { e.preventDefault(); drawing = true; strokePoints = []; };
             canvas.onmouseup = canvas.ontouchend = async (e) => { 
                 e.preventDefault(); drawing = false; 
-                if (strokePoints.length > 3) {
-                    await sendAnswerToServer(null, { points: strokePoints, width: canvas.width });
-                }
+                if (strokePoints.length > 3) await sendAnswerToServer(null, { points: strokePoints, width: canvas.width });
             };
             canvas.onmousemove = canvas.ontouchmove = (e) => {
                 if (!drawing) return; e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX);
                 const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                
                 const pt = { x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) };
                 strokePoints.push(pt);
-                
-                ctx.fillStyle = '#bc9855';
-                ctx.fillRect(pt.x, pt.y, 4, 4);
+                ctx.fillStyle = '#bc9855'; ctx.fillRect(pt.x, pt.y, 4, 4);
             };
         }
 
         function setupKineticGhost() {
             const canvas = document.getElementById('void-canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight; 
-
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; 
             const letters = ["V", "O", "R", "T", "E", "X"];
 
             function processFrame() {
                 if (currentLevelIndex < 15) return;
-
-                ctx.fillStyle = 'rgba(12, 12, 14, 0.2)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+                ctx.fillStyle = 'rgba(12, 12, 14, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 const time = performance.now();
 
                 if (currentLevelIndex === 22) {
                     const interval = 3000;
                     const currentLetterIdx = Math.floor((time / interval) % letters.length);
-                    
-                    const totalLetters = letters.length;
-                    const rectWidth = 50;
-                    const rectHeight = 60;
-                    const gap = 15;
-                    
+                    const totalLetters = letters.length; const rectWidth = 50; const rectHeight = 60; const gap = 15;
                     const totalWidth = (rectWidth * totalLetters) + (gap * (totalLetters - 1));
-                    const startX = (canvas.width - totalWidth) / 2;
-                    const startY = (canvas.height - rectHeight) / 2 - 20;
+                    const startX = (canvas.width - totalWidth) / 2; const startY = (canvas.height - rectHeight) / 2 - 20;
 
                     for (let i = 0; i < totalLetters; i++) {
                         const x = startX + i * (rectWidth + gap);
-                        
                         if (i === currentLetterIdx) {
-                            ctx.strokeStyle = '#bc9855';
-                            ctx.lineWidth = 2;
-                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
-                            
+                            ctx.strokeStyle = '#bc9855'; ctx.lineWidth = 2; ctx.strokeRect(x, startY, rectWidth, rectHeight);
                             for (let s = 0; s < 40; s++) {
                                 ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.7})`;
                                 ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2);
                             }
-
-                            ctx.fillStyle = '#fff';
-                            ctx.font = 'bold 28px "Courier New"';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            const glitchX = Math.random() * 4 - 2;
-                            ctx.fillText(letters[i], x + (rectWidth / 2) + glitchX, startY + (rectHeight / 2));
+                            ctx.fillStyle = '#fff'; ctx.font = 'bold 28px "Courier New"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                            ctx.fillText(letters[i], x + (rectWidth / 2) + (Math.random() * 4 - 2), startY + (rectHeight / 2));
                         } else {
-                            ctx.strokeStyle = '#18181b';
-                            ctx.lineWidth = 1;
-                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            ctx.strokeStyle = '#18181b'; ctx.lineWidth = 1; ctx.strokeRect(x, startY, rectWidth, rectHeight);
                         }
                     }
                 } else {
                     for (let i = 0; i < 350; i++) {
-                        const x = Math.random() * canvas.width;
-                        const y = Math.random() * canvas.height;
-                        const size = Math.random() * 1.5;
-                        const alpha = Math.random() * 0.12;
-                        ctx.fillStyle = `rgba(188, 152, 85, ${alpha})`;
-                        ctx.fillRect(x, y, size, size);
+                        ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.12})`;
+                        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 1.5, Math.random() * 1.5);
                     }
-
-                    if (Math.random() > 0.88) {
-                        ctx.fillStyle = 'rgba(188, 152, 85, 0.04)';
-                        ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 3);
-                    }
+                    if (Math.random() > 0.88) { ctx.fillStyle = 'rgba(188, 152, 85, 0.04)'; ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 3); }
                 }
                 kineticAnimationFrameId = requestAnimationFrame(processFrame);
             }
@@ -516,14 +437,7 @@
         }
         function fallbackCopy(t) { const ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; document.body.appendChild(ta); ta.focus(); ta.select(); try { document.execCommand('copy'); alert("Game link copied!"); } catch (e) {} document.body.removeChild(ta); }
         
-        function resetGame() { 
-            currentLevelIndex = 0; 
-            wrongAttempts = 0; 
-            serverLevelData = null; 
-            document.getElementById('victory-screen').classList.remove('active'); 
-            document.getElementById('start-screen').classList.add('active'); 
-            window.updateMyLevelStatus(-1);
-        }
+        function resetGame() { currentLevelIndex = 0; wrongAttempts = 0; serverLevelData = null; document.getElementById('victory-screen').classList.remove('active'); document.getElementById('start-screen').classList.add('active'); window.updateMyLevelStatus(-1); }
 
         document.getElementById('sub-btn').addEventListener('click', submitAnswer);
         document.getElementById('modal-continue-btn').addEventListener('click', nextLevel);
