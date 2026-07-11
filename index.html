@@ -45,6 +45,7 @@
             touch-action: manipulation;
         }
         .btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px rgba(188, 152, 85, 0.4); }
+        .btn:disabled { border-color: var(--text-muted); color: var(--text-muted); cursor: not-allowed; box-shadow: none; background: none; }
         .btn.secondary { border-color: var(--text-muted); color: var(--text-muted); }
         .btn.secondary:hover { background: var(--text-muted); color: var(--bg-color); }
         
@@ -184,6 +185,7 @@
 
         let currentLevelIndex = 0;
         let wrongAttempts = 0;
+        let isSubmitting = false; 
         let clickPattern = [];
         let strokePoints = [];
         let kineticAnimationFrameId = null;
@@ -325,14 +327,26 @@
                 }
 
                 if (inputField.style.display !== 'none') inputField.focus();
-            } catch (err) { console.error(err); }
+
+                isSubmitting = false;
+                document.getElementById('sub-btn').disabled = false;
+            } catch (err) { 
+                console.error(err); 
+                isSubmitting = false;
+                document.getElementById('sub-btn').disabled = false;
+            }
         }
 
         async function submitAnswer() {
+            if (isSubmitting) return;
+
             const inputField = document.getElementById('user-answer');
             if (inputField.style.display === 'none') return;
             if (inputField.value.trim() === "") return;
             
+            isSubmitting = true;
+            document.getElementById('sub-btn').disabled = true;
+
             if (currentLevelIndex === 23) {
                 await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
             } else {
@@ -349,7 +363,10 @@
                 });
                 const result = await response.json();
                 if (result.success) triggerSuccess(); else triggerFail();
-            } catch (err) { console.error(err); }
+            } catch (err) { 
+                console.error(err); 
+                triggerFail();
+            }
         }
 
         function triggerSuccess() {
@@ -362,9 +379,16 @@
             el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400);
             wrongAttempts++; document.getElementById('attempt-counter').textContent = wrongAttempts;
             if (wrongAttempts >= 10 && currentLevelIndex < 15) document.getElementById('hint-box').classList.add('visible');
+
+            isSubmitting = false;
+            document.getElementById('sub-btn').disabled = false;
         }
 
         function nextLevel() {
+            if (isSubmitting) return;
+            isSubmitting = true;
+            document.getElementById('sub-btn').disabled = true;
+
             document.getElementById('success-modal').classList.remove('active');
             currentLevelIndex++; loadLevelFromServer();
         }
@@ -517,6 +541,8 @@
         function resetGame() { 
             currentLevelIndex = 0; 
             wrongAttempts = 0; 
+            isSubmitting = false; 
+            document.getElementById('sub-btn').disabled = false;
             serverLevelData = null; 
             document.getElementById('victory-screen').classList.remove('active'); 
             document.getElementById('start-screen').classList.add('active'); 
@@ -527,7 +553,15 @@
         document.getElementById('modal-continue-btn').addEventListener('click', nextLevel);
         document.getElementById('restart-btn').addEventListener('click', resetGame);
         document.getElementById('share-btn').addEventListener('click', copyShareLink);
-        document.getElementById('user-answer').addEventListener('keydown', async (e) => { if (e.key === 'Enter') { if (document.getElementById('success-modal').classList.contains('active')) nextLevel(); else await submitAnswer(); } });
+        document.getElementById('user-answer').addEventListener('keydown', async (e) => { 
+            if (e.key === 'Enter') { 
+                if (document.getElementById('success-modal').classList.contains('active')) {
+                    nextLevel(); 
+                } else {
+                    await submitAnswer(); 
+                }
+            } 
+        });
     </script>
 </body>
 </html>
