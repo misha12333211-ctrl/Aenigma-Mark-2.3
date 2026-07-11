@@ -44,7 +44,6 @@
         .stats { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px; }
         .stats strong { color: var(--accent); }
         
-        /* ПУНКТ 2: Идеальное центрирование игрового блока */
         main {
             width: 100%; max-width: 600px; background: var(--card-bg); border: 1px solid var(--border);
             padding: 50px 40px; border-radius: 2px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); text-align: center; position: relative;
@@ -54,12 +53,14 @@
         .screen.active { display: block; }
         h1 { font-size: 1.6rem; letter-spacing: 5px; margin-bottom: 30px; color: #fff; position: relative; z-index: 20; }
         p { color: var(--text-main); line-height: 1.8; margin-bottom: 35px; font-size: 0.95rem; text-align: justify; position: relative; z-index: 20; }
-        input[type="text"] {
+        input[type="text"], textarea {
             width: 100%; background: var(--bg-color); border: 1px solid var(--border); padding: 15px; color: #fff;
             margin-bottom: 25px; outline: none; text-align: center; letter-spacing: 2px; font-size: 1.1rem;
             transition: all 0.3s ease; -webkit-user-select: text; user-select: text; position: relative; z-index: 20;
         }
-        input[type="text"]:focus { border-color: var(--accent); background: #09090b; }
+        input[type="text"]:focus, textarea:focus { border-color: var(--accent); background: #09090b; }
+        textarea { text-align: left; resize: none; font-size: 0.9rem; letter-spacing: 0px; }
+        
         .btn-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; position: relative; z-index: 20; }
         .btn {
             background: none; border: 1px solid var(--accent); color: var(--accent); padding: 15px 35px;
@@ -98,7 +99,6 @@
         
         .game-info-container { width: 100%; max-width: 700px; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; padding-top: 20px; flex-shrink: 0; }
         
-        /* ПУНКТ 3: Отступ снизу после копирайта */
         footer { 
             width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; padding-bottom: 35px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
             display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; flex-shrink: 0;
@@ -286,10 +286,12 @@
         </div>
     </div>
 
+    <!-- ИСПРАВЛЕНО: Текстовое описание в Report модалке -->
     <div id="chat-report-modal" class="modal-overlay">
-        <div class="modal-card chat-dialog-card" style="border-color: #f59e0b;">
+        <div class="modal-card chat-dialog-card" style="border-color: #f59e0b; max-width: 480px;">
             <h3 style="color: #f59e0b;">SUBMIT REPORT</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Send information about this message to mod-team?</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Describe the problem or violation below:</p>
+            <textarea id="chat-report-text" placeholder="Type explanation here (max 200 chars)..." maxlength="200" rows="3"></textarea>
             <div class="btn-container">
                 <button class="btn" id="chat-report-confirm" style="border-color: #f59e0b; color: #f59e0b;">SEND</button>
                 <button class="btn secondary" id="chat-report-cancel">CANCEL</button>
@@ -373,8 +375,8 @@
         let serverLevelData = null;
         let myUserRef = null;
 
-        // ПУНКТ 1: Старый текстовый пароль полностью удален из фронтенда. Проверка идет через сервер.
-        let isModerator = localStorage.getItem('is_admin') === 'true';
+        // ИСПРАВЛЕНО: Статус админа жестко изолирован в константе, проверяемой на старте сессии
+        const IS_CURRENT_USER_ADMIN = localStorage.getItem('is_admin') === 'true';
 
         const urlParams = new URLSearchParams(window.location.search);
         const potentialPassword = urlParams.get('mod');
@@ -387,7 +389,6 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    isModerator = true;
                     localStorage.setItem('is_admin', 'true');
                     localStorage.setItem('admin_token', potentialPassword); 
                     window.location.search = ""; 
@@ -401,7 +402,9 @@
             localStorage.setItem('chat_uid', myUserId);
         }
         
-        let myNickname = localStorage.getItem('chat_nick') || 'Guest_' + myUserId.split('_')[1];
+        // ИСПРАВЛЕНО: Генерация дефолтного Guest_ID на случай пустого поля
+        const getDefaultNickname = () => 'Guest_' + myUserId.split('_')[1];
+        let myNickname = localStorage.getItem('chat_nick') || getDefaultNickname();
         document.getElementById('chat-nick-input').value = myNickname;
 
         let lastMessageTime = 0;
@@ -723,7 +726,6 @@
             chatWarningModal.classList.add('active');
         }
 
-        // ПУНКТЫ 5 и 6: Клиентская валидация на любые запрещенные слова, страны, рекламу и личные данные
         function validateText(text) {
             const trimmed = text.trim();
             if (!trimmed) return { valid: false, reason: "Поле ввода не может быть пустым." };
@@ -733,13 +735,11 @@
                 return { valid: false, reason: "Превышен лимит слов! Разрешено не более 40 слов." };
             }
 
-            // Допускаются только буквы всех алфавитов, цифры, пробелы и знаки пунктуации ?, !, ., ,
             const strictSymbolsRegex = /^[a-zA-Z0-9а-яА-ЯёЁ\s?!.,]+$/;
             if (!strictSymbolsRegex.test(trimmed)) {
                 return { valid: false, reason: "Обнаружены запрещенные символы или эмодзи! Разрешены только буквы, цифры и знаки: ?, !, ., ," };
             }
 
-            // Пул запрещенных политических имен, стран, матов и рекламы
             const blacklistedKeywords = [
                 /эрдоган/i, /erdogan/i, /путин/i, /putin/i, /зеленск/i, /zelensk/i, /байден/i, /biden/i, /трамп/i, /trump/i,
                 /россия/i, /russia/i, /украин/i, /ukrain/i, /сша/i, /usa/i, /турция/i, /turkey/i, /политика/i, /politic/i,
@@ -762,10 +762,23 @@
             return { valid: true };
         }
 
+        // ИСПРАВЛЕНО: Безопасное сохранение и очистка пустого никнейма
         nickSaveBtn.addEventListener('click', () => {
             const val = nickInput.value.trim();
+            
+            if (!val || val.length < 3 || val.length > 16) {
+                nickInput.classList.add('shake');
+                setTimeout(() => nickInput.classList.remove('shake'), 400);
+                // Если стёрли ник - сбрасываем на дефолтный
+                myNickname = getDefaultNickname();
+                localStorage.setItem('chat_nick', myNickname);
+                nickInput.value = myNickname;
+                triggerWarningModal("Никнейм сброшен. Никнейм должен содержать от 3 до 16 валидных символов и не быть пустым.");
+                return;
+            }
+
             const check = validateText(val);
-            if(val.length >= 3 && val.length <= 16 && check.valid) {
+            if (check.valid) {
                 myNickname = val;
                 localStorage.setItem('chat_nick', myNickname);
                 nickInput.style.borderColor = 'var(--border)';
@@ -773,7 +786,7 @@
             } else {
                 nickInput.classList.add('shake');
                 setTimeout(() => nickInput.classList.remove('shake'), 400);
-                triggerWarningModal(check.reason || "Никнейм должен содержать от 3 до 16 валидных символов.");
+                triggerWarningModal(check.reason);
             }
         });
 
@@ -903,8 +916,8 @@
                     actionsContainer.appendChild(reportLink);
                 }
 
-                // ПУНКТ 1: Модерация использует безопасный токен сессии из localStorage
-                if (isModerator) {
+                // ИСПРАВЛЕНО: Теперь используется изолированная глобальная константа IS_CURRENT_USER_ADMIN
+                if (IS_CURRENT_USER_ADMIN) {
                     const adminDeleteLink = document.createElement('span');
                     adminDeleteLink.className = 'chat-action-link admin-link';
                     adminDeleteLink.innerText = '[Удалить]';
@@ -915,8 +928,16 @@
                     adminBanLink.innerText = '[Бан по ID]';
                     adminBanLink.onclick = () => adminBanUser(msg.uid);
 
+                    // НОВОЕ: Возможность разблокировать пользователя прямо из контекста
+                    const adminUnbanLink = document.createElement('span');
+                    adminUnbanLink.className = 'chat-action-link admin-link';
+                    adminUnbanLink.style.color = '#10b981';
+                    adminUnbanLink.innerText = '[Разбан по ID]';
+                    adminUnbanLink.onclick = () => adminUnbanUser(msg.uid);
+
                     actionsContainer.appendChild(adminDeleteLink);
                     actionsContainer.appendChild(adminBanLink);
+                    actionsContainer.appendChild(adminUnbanLink);
                 }
 
                 block.appendChild(actionsContainer);
@@ -943,6 +964,25 @@
                 });
                 alert(`Пользователь ${targetUid} успешно забанен.`);
             } catch(e) { alert("Ошибка при блокировке."); }
+        }
+
+        // НОВОЕ: Метод разблокировки (удаления из черного списка) на клиенте
+        async function adminUnbanUser(targetUid) {
+            if (!confirm(`Разблокировать пользователя ${targetUid}?`)) return;
+            try {
+                const token = localStorage.getItem('admin_token');
+                const res = await fetch(`${API_URL}/adminUnbanUser`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetUid, adminPassword: token })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    alert(`Пользователь ${targetUid} успешно разблокирован.`);
+                } else {
+                    alert("Не удалось разблокировать.");
+                }
+            } catch(e) { alert("Ошибка шлюза при разблокировке."); }
         }
 
         function openEditDialog(id, currentText) {
@@ -984,7 +1024,7 @@
         document.getElementById('chat-delete-cancel').onclick = () => deleteModal.classList.remove('active');
         document.getElementById('chat-delete-confirm').onclick = async () => {
             try {
-                await remove(child(chatRef, activeTargetMsgId));
+                await remove(child(child(chatRef, activeTargetMsgId)));
                 deleteModal.classList.remove('active');
             } catch(e) {}
         };
@@ -992,13 +1032,15 @@
         let reportData = null;
         function openReportDialog(id, targetUid, user, text) {
             reportData = { id, targetUid, user, text };
+            document.getElementById('chat-report-text').value = ''; // Очищаем textarea
             reportModal.classList.add('active');
         }
         document.getElementById('chat-report-cancel').onclick = () => reportModal.classList.remove('active');
         
-        // ПУНКТ 4: Исправленная отправка жалобы через шлюз API на NodeJS
+        // ИСПРАВЛЕНО: Отправка развернутой жалобы вместе с кастомным текстовым описанием
         document.getElementById('chat-report-confirm').onclick = async () => {
             if(!reportData) return;
+            const customComment = document.getElementById('chat-report-text').value.trim();
             const confirmBtn = document.getElementById('chat-report-confirm');
             confirmBtn.disabled = true;
             try {
@@ -1009,7 +1051,8 @@
                         messageId: reportData.id,
                         offenderId: reportData.targetUid,
                         offenderName: reportData.user,
-                        text: reportData.text
+                        text: reportData.text,
+                        comment: customComment || "No comment provided"
                     })
                 });
                 const data = await res.json();
