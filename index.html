@@ -96,7 +96,6 @@
         }
         #open-chat-btn:hover svg { transform: scale(1.08); }
 
-        /* Чат лог - Монолитное выравнивание */
         .chat-msg-row {
             word-wrap: break-word;
             word-break: break-all;
@@ -124,7 +123,6 @@
             background: rgba(188, 152, 85, 0.08);
         }
 
-        /* Контекстное меню терминала */
         .context-menu {
             display: none;
             position: fixed;
@@ -244,7 +242,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно чата -->
     <div id="chat-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 550px; width: 95%; border-color: var(--accent); box-shadow: 0 0 30px rgba(188, 152, 85, 0.15); padding: 30px 25px;">
             <h2 style="color: var(--accent); font-size: 0.9rem; margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between; letter-spacing: 1px; align-items: center; width: 100%;">
@@ -259,7 +256,6 @@
             </h2>
             
             <div id="chat-messages" style="height: 280px; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 15px; font-size: 0.85rem; color: #a1a1aa; margin-bottom: 20px; display: flex; flex-direction: column; gap: 4px;">
-                <!-- Логи -->
             </div>
             
             <div class="chat-input-container" style="display: flex; gap: 10px;">
@@ -269,7 +265,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно Политики Конфиденциальности -->
     <div id="privacy-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 600px; width: 95%; border-color: var(--border); box-shadow: 0 0 30px rgba(255,255,255,0.05); padding: 30px 25px;">
             <h2 style="color: var(--text-main); font-size: 0.9rem; margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between; letter-spacing: 1px;">
@@ -286,7 +281,6 @@
         </div>
     </div>
 
-    <!-- Кастомное контекстное меню терминала -->
     <div id="chat-context-menu" class="context-menu">
         <div class="context-menu-item" id="ctx-edit-btn">> EDIT_DATA</div>
         <div class="context-menu-item danger" id="ctx-del-btn">> PURGE_DATA</div>
@@ -303,10 +297,10 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-        import { getDatabase, ref, onValue, push, onDisconnect, set, remove, runTransaction, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+        // ИСПРАВЛЕНО: Версия изменена на стабильную 10.12.0
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, onValue, push, onDisconnect, set, remove, runTransaction, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-        // Защита исходного кода от F12, контекстного меню и горячих клавиш плагиата
         document.addEventListener('contextmenu', (e) => {
             if (!e.target.closest('#chat-messages')) {
                 e.preventDefault();
@@ -321,18 +315,13 @@
             }
         });
 
-        // Продвинутая ультра-жесткая фильтрация никнеймов: ФИО, спецсимволы и скрытые обходы
         function containsRealIdentityName(text) {
             const clean = text.trim();
-
-            // 1. ЗАЩИТА ОТ СПЕЦСИМВОЛОВ (включая #, &, $, @, и т.д.)
-            // Разрешаем только буквы всех языков (\p{L}), цифры (\p{N}), дефис и нижнее подчеркивание.
             const validCharsPattern = /^[\p{L}\p{N}_\-]+$/u;
             if (!validCharsPattern.test(clean.replace(/\s+/g, ''))) {
                 return true; 
             }
             
-            // 2. Проверка на стандартное разделение пробелами (Иван Иванов, John Doe, 王 伟)
             const parts = clean.split(/\s+/);
             if (parts.length >= 2) {
                 const capitalizedPattern = /^[\p{Lu}\p{Lt}]/u; 
@@ -348,11 +337,9 @@
                 if (asianCount >= 2) return true;
             }
 
-            // 3. Проверка на слитное написание без пробелов (CamelCase: ИванИванов, JohnDoe)
             const camelCasePattern = /[\p{Ll}\p{Lm}\p{Lo}][\p{Lu}\p{Lt}]/u;
             if (camelCasePattern.test(clean)) return true;
 
-            // 4. Защита от азиатских реальных имен без пробелов (2-4 иероглифа)
             const pureAsianPattern = /^[\p{CjkUnifiedIdeographs}]{2,4}$/u;
             if (pureAsianPattern.test(clean)) return true;
 
@@ -463,9 +450,10 @@
             }
         });
 
+        // ИСПРАВЛЕНО: Безопасное чтение снимка без вызова snap.val как функции
         onValue(onlineUsersRef, (snap) => {
             try {
-                const data = typeof snap.val === 'function' ? snap.val() : snap;
+                const data = snap.val();
                 let totalOnline = 0; let layerOnline = 0;
                 if (data) {
                     const users = Object.values(data); totalOnline = users.length;
@@ -659,13 +647,11 @@
         document.getElementById('share-btn').addEventListener('click', copyShareLink);
         document.getElementById('user-answer').addEventListener('keydown', async (e) => { if (e.key === 'Enter') { if (document.getElementById('success-modal').classList.contains('active')) nextLevel(); else await submitAnswer(); } });
 
-        // === ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ ===
         privacyTrigger.addEventListener('click', () => privacyModal.classList.add('active'));
         closePrivacyBtn.addEventListener('click', () => privacyModal.classList.remove('active'));
         privacyOkBtn.addEventListener('click', () => privacyModal.classList.remove('active'));
         privacyModal.addEventListener('click', (e) => { if (e.target === privacyModal) privacyModal.classList.remove('active'); });
 
-        // === ЧАТ ЛОГИКА ===
         openChatBtn.addEventListener('click', () => {
             chatModal.classList.add('active');
             setTimeout(() => { chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight; chatInputEl.focus(); }, 50);
@@ -705,8 +691,6 @@
             if (!text || text.length > 150) return;
 
             if (isNicknameChangingMode) {
-                // ЖЕСТКАЯ МОДЕРАЦИЯ НИКНЕЙМА
-                // Лимит длины (3-16) + Валидация ФИО и спецсимволов (#, &)
                 if (text.length < 3 || text.length > 16 || containsRealIdentityName(text)) {
                     chatInputEl.classList.add('shake');
                     setTimeout(() => chatInputEl.classList.remove('shake'), 400);
@@ -822,7 +806,6 @@
                     const isMyMessage = (msg.user === playerNickname);
                     const clickableClass = isMyMessage ? "my-msg" : "other-msg";
 
-                    // Монолитная верстка строки: ник и текст находятся на единой линии в общем потоке
                     msgEl.innerHTML = `
                         <span class="${clickableClass}" data-key="${key}">
                             <span style="color: var(--accent); font-weight: bold; margin-bottom: -1px;">[LVL ${msg.level}] ${msg.user}:</span> <span style="color: #fff;">${escapeHtml(msg.message)}</span>
