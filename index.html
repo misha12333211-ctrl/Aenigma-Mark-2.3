@@ -297,23 +297,19 @@
     </footer>
 
     <script type="module">
-        // ИСПРАВЛЕНО: Версия изменена на стабильную 10.12.0
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, onValue, push, onDisconnect, set, remove, runTransaction, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+        // Блокировка контекстного меню теперь работает только для окна сообщений чата
         document.addEventListener('contextmenu', (e) => {
             if (!e.target.closest('#chat-messages')) {
+                // Стандартное контекстное меню разрешено везде, кроме самого чата
+            } else {
                 e.preventDefault();
             }
         });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-                (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'U')) {
-                e.preventDefault();
-                return false;
-            }
-        });
+
+        // Блокировка клавиш F12, Ctrl+Shift+I/J/C, Ctrl+U полностью удалена
 
         function containsRealIdentityName(text) {
             const clean = text.trim();
@@ -450,7 +446,6 @@
             }
         });
 
-        // ИСПРАВЛЕНО: Безопасное чтение снимка без вызова snap.val как функции
         onValue(onlineUsersRef, (snap) => {
             try {
                 const data = snap.val();
