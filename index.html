@@ -56,7 +56,6 @@
         }
         .clicker-btn:active { background: rgba(188, 152, 85, 0.2); transform: scale(0.95); }
         
-        /* Исправлено: canvas по умолчанию не блокирует клики, pointer-events регулируются динамически */
         #void-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: crosshair; display: none; touch-action: none; pointer-events: none; }
         
         .antiai-trap {
@@ -87,13 +86,36 @@
 
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+
+        /* Стиль для кнопки чата в шапке */
+        #open-chat-btn {
+            border-color: var(--border) !important;
+        }
+        #open-chat-btn:hover {
+            border-color: var(--accent) !important;
+            background: rgba(188, 152, 85, 0.08) !important;
+            box-shadow: 0 0 12px rgba(188, 152, 85, 0.25);
+        }
+        #open-chat-btn:hover svg {
+            transform: scale(1.08);
+        }
     </style>
 </head>
 <body>
 
     <header>
         <div class="stats">CORE:// AENIGMA_MARK_2.3</div>
-        <div class="stats">ATTEMPTS:// <strong id="attempt-counter">0</strong>/10</div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <div class="stats">ATTEMPTS:// <strong id="attempt-counter">0</strong>/10</div>
+            <!-- Жёлтая SVG-иконка чата без текста -->
+            <button id="open-chat-btn" title="Open Communication Link" style="background: none; border: 1px solid var(--border); padding: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; border-radius: 2px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transition: transform 0.3s;">
+                    <path d="M18 2H6C3.79 2 2 3.79 2 6v6c0 2.21 1.79 4 4 4h1v4l4-4h7c2.21 0 4-1.79 4-4V6c0-2.21-1.79-4-4-4z" fill="var(--accent)"/>
+                    <path d="M6 6h12v1.5H6V6zm0 3.5h12V11H6V9.5zm0 3.5h8v1.5H6V13z" fill="var(--bg-color)"/>
+                    <path d="M19 9h2c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2h-1l-3 3v-3h-5c-1.1 0-2-.9-2-2v-1.1c.64-.17 1.24-.47 1.76-.88L15 16h5v-5.5c0-.52-.13-1.01-.35-1.45.11-.03.23-.05.35-.05z" fill="var(--accent)" opacity="0.85"/>
+                </svg>
+            </button>
+        </div>
     </header>
 
     <main id="main-container">
@@ -135,11 +157,31 @@
         </div>
     </main>
 
+    <!-- Успешное прохождение -->
     <div id="success-modal" class="modal-overlay">
         <div class="modal-card">
             <h2>ACCESS GRANTED</h2>
             <p id="modal-message">...</p>
             <button class="btn" id="modal-continue-btn">CONTINUE</button>
+        </div>
+    </div>
+
+    <!-- Новая модалка терминального чата -->
+    <div id="chat-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 550px; width: 95%; border-color: var(--accent); box-shadow: 0 0 30px rgba(188, 152, 85, 0.15);">
+            <h2 style="color: var(--accent); font-size: 1.2rem; margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between;">
+                <span>// COMM_LINK_ESTABLISHED</span>
+                <span id="close-chat-btn" style="cursor: pointer; color: var(--text-muted); font-size: 1rem;">[X]</span>
+            </h2>
+            
+            <div id="chat-messages" style="height: 250px; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 15px; font-size: 0.85rem; color: #a1a1aa; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
+                <!-- Сообщения грузятся сюда -->
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="chat-input" placeholder="ENTER TRANSMISSION..." autocomplete="off" style="margin-bottom: 0; padding: 12px; font-size: 0.95rem; text-align: left;">
+                <button id="chat-send-btn" class="btn" style="padding: 12px 25px; font-size: 0.85rem;">SEND</button>
+            </div>
         </div>
     </div>
 
@@ -153,7 +195,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-        import { getDatabase, ref, onValue, push, onDisconnect, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+        import { getDatabase, ref, onValue, push, onDisconnect, set, runTransaction, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkFTLYk0Jd02thV6DLEzB8hJF-B9IRx68",
@@ -171,6 +213,7 @@
         const connectedRef = ref(db, ".info/connected");
         const onlineUsersRef = ref(db, "online_users");
         const completed24Ref = ref(db, 'counters/completed24');
+        const chatRef = ref(db, 'chat_messages');
 
         let currentLevelIndex = 0;
         let wrongAttempts = 0;
@@ -180,6 +223,16 @@
         let kineticAnimationFrameId = null;
         let serverLevelData = null;
         let myUserRef = null;
+
+        const playerNickname = `OPERATOR_${Math.floor(100 + Math.random() * 900)}`;
+
+        // Доступы к элементам модалки чата
+        const chatModal = document.getElementById('chat-modal');
+        const openChatBtn = document.getElementById('open-chat-btn');
+        const closeChatBtn = document.getElementById('close-chat-btn');
+        const chatMessagesEl = document.getElementById('chat-messages');
+        const chatInputEl = document.getElementById('chat-input');
+        const chatSendBtnEl = document.getElementById('chat-send-btn');
 
         onValue(likesRef, (snap) => { 
             const serverLikes = snap.val() || 0;
@@ -192,20 +245,14 @@
 
         document.getElementById('like-btn').addEventListener('click', async () => {
             const likeBtnEl = document.getElementById('like-btn');
-            
             if (localStorage.getItem('aenigma_liked')) {
                 likeBtnEl.classList.add('shake');
                 setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
                 return;
             }
-
             likeBtnEl.style.pointerEvents = 'none';
-
             try {
-                await runTransaction(likesRef, (currentValue) => {
-                    return (currentValue || 0) + 1;
-                });
-                
+                await runTransaction(likesRef, (currentValue) => { return (currentValue || 0) + 1; });
                 localStorage.setItem('aenigma_liked', 'true');
                 likeBtnEl.style.color = 'var(--accent)';
                 likeBtnEl.style.borderColor = 'var(--accent)';
@@ -224,9 +271,7 @@
         }
 
         window.updateMyLevelStatus = function(levelIndex) {
-            if (myUserRef) {
-                set(myUserRef, { active: true, level: levelIndex });
-            }
+            if (myUserRef) set(myUserRef, { active: true, level: levelIndex });
         }
 
         onValue(connectedRef, (snap) => {
@@ -240,23 +285,14 @@
         onValue(onlineUsersRef, (snap) => {
             try {
                 const data = typeof snap.val === 'function' ? snap.val() : snap;
-                let totalOnline = 0;
-                let layerOnline = 0;
-
+                let totalOnline = 0; let layerOnline = 0;
                 if (data) {
-                    const users = Object.values(data);
-                    totalOnline = users.length;
-                    
-                    users.forEach(user => {
-                        if (user && user.level === currentLevelIndex) {
-                            layerOnline++;
-                        }
-                    });
+                    const users = Object.values(data); totalOnline = users.length;
+                    users.forEach(user => { if (user && user.level === currentLevelIndex) layerOnline++; });
                 } 
                 document.getElementById('online-count').innerText = totalOnline;
                 document.getElementById('layer-online-count').innerText = layerOnline;
             } catch (err) {
-                console.error("Online formatting fail fallback engaged:", err);
                 document.getElementById('online-count').innerText = 1;
                 document.getElementById('layer-online-count').innerText = 1;
             }
@@ -270,14 +306,11 @@
 
         async function loadLevelFromServer() {
             if (kineticAnimationFrameId) { cancelAnimationFrame(kineticAnimationFrameId); kineticAnimationFrameId = null; }
-
             try {
                 const response = await fetch(`${API_URL}/getLevelData?index=${currentLevelIndex}`);
                 const data = await response.json();
-
                 if (data.finished) { showVictoryScreen(); return; }
                 serverLevelData = data;
-
                 window.updateMyLevelStatus(currentLevelIndex);
 
                 document.getElementById('level-title').textContent = data.title;
@@ -299,51 +332,25 @@
                 }
                 document.getElementById('hint-box').classList.remove('visible');
 
-                // Исправлено: Сверка типов согласно массиву SECRET_LEVELS
-                if (data.type === "DYNAMIC") {
-                    inputField.style.display = 'block'; ctrlBlock.style.display = 'flex'; clickBtn.style.display = 'none';
-                }
-
-                if (data.type === "CLICKER") {
-                    inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block';
-                    setupClicker();
-                }
-
-                if (data.type === "CANVAS") {
-                    inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.display = 'block';
-                    canvas.style.pointerEvents = 'auto'; 
-                    setupCanvas();
-                }
-
-                // Включаем фоновую анимацию для Хелл-сектора
-                if (currentLevelIndex >= 15 && data.type !== "CANVAS") { 
-                    canvas.style.display = 'block';
-                    canvas.style.pointerEvents = 'none'; 
-                    setupKineticGhost();
-                }
-
+                if (data.type === "DYNAMIC") { inputField.style.display = 'block'; ctrlBlock.style.display = 'flex'; clickBtn.style.display = 'none'; }
+                if (data.type === "CLICKER") { inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block'; setupClicker(); }
+                if (data.type === "CANVAS") { inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.display = 'block'; canvas.style.pointerEvents = 'auto'; setupCanvas(); }
+                if (currentLevelIndex >= 15 && data.type !== "CANVAS") { canvas.style.display = 'block'; canvas.style.pointerEvents = 'none'; setupKineticGhost(); }
                 if (inputField.style.display !== 'none') inputField.focus();
 
-                isSubmitting = false;
-                document.getElementById('sub-btn').disabled = false;
+                isSubmitting = false; document.getElementById('sub-btn').disabled = false;
             } catch (err) { 
-                console.error(err); 
-                isSubmitting = false;
-                document.getElementById('sub-btn').disabled = false;
+                console.error(err); isSubmitting = false; document.getElementById('sub-btn').disabled = false;
             }
         }
 
         async function submitAnswer() {
             if (isSubmitting) return;
-
             const inputField = document.getElementById('user-answer');
             if (inputField.style.display === 'none') return;
             if (inputField.value.trim() === "") return;
             
-            isSubmitting = true;
-            document.getElementById('sub-btn').disabled = true;
-
-            // Исправлено: LEVEL 24 — это индекс 23
+            isSubmitting = true; document.getElementById('sub-btn').disabled = true;
             if (currentLevelIndex === 23) {
                 await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
             } else {
@@ -360,10 +367,7 @@
                 });
                 const result = await response.json();
                 if (result.success) triggerSuccess(); else triggerFail();
-            } catch (err) { 
-                console.error(err); 
-                triggerFail();
-            }
+            } catch (err) { console.error(err); triggerFail(); }
         }
 
         function triggerSuccess() {
@@ -374,19 +378,15 @@
         function triggerFail() {
             const el = document.getElementById('user-answer').style.display !== 'none' ? document.getElementById('user-answer') : document.getElementById('clicker-node');
             el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400);
-            
             wrongAttempts++; 
             document.getElementById('attempt-counter').textContent = wrongAttempts;
             if (wrongAttempts >= 10 && currentLevelIndex < 15) document.getElementById('hint-box').classList.add('visible');
-
-            isSubmitting = false;
-            document.getElementById('sub-btn').disabled = false;
+            isSubmitting = false; document.getElementById('sub-btn').disabled = false;
         }
 
         function nextLevel() {
             document.getElementById('success-modal').classList.remove('active');
-            currentLevelIndex++; 
-            loadLevelFromServer();
+            currentLevelIndex++; loadLevelFromServer();
         }
 
         async function showVictoryScreen() {
@@ -394,137 +394,65 @@
             document.getElementById('clicker-node').style.display = 'none';
             document.getElementById('game-screen').classList.remove('active');
             document.getElementById('victory-screen').classList.add('active');
-            generateQR();
-            
-            window.updateMyLevelStatus(99); 
-            
-            try {
-                await runTransaction(completed24Ref, (currentValue) => {
-                    return (currentValue || 0) + 1;
-                });
-            } catch(e) { 
-                console.error("Failed to log victory directly to Firebase", e); 
-            }
+            generateQR(); window.updateMyLevelStatus(99); 
+            try { await runTransaction(completed24Ref, (currentValue) => { return (currentValue || 0) + 1; }); } catch(e) {}
         }
 
         function setupClicker() {
-            clickPattern = [];
-            const clickBtn = document.getElementById('clicker-node');
-            let lastClickTime = 0;
-            
+            clickPattern = []; const clickBtn = document.getElementById('clicker-node'); let lastClickTime = 0;
             clickBtn.onmousedown = clickBtn.ontouchstart = (e) => { e.preventDefault(); lastClickTime = Date.now(); };
             clickBtn.onmouseup = clickBtn.ontouchend = async (e) => {
-                e.preventDefault();
-                const duration = Date.now() - lastClickTime;
-                clickPattern.push(duration);
+                e.preventDefault(); const duration = Date.now() - lastClickTime; clickPattern.push(duration);
                 if (clickPattern.length > 9) clickPattern.shift();
-                
-                if (clickPattern.length === 9) {
-                    await sendAnswerToServer(null, { timings: clickPattern });
-                    clickPattern = [];
-                }
+                if (clickPattern.length === 9) { await sendAnswerToServer(null, { timings: clickPattern }); clickPattern = []; }
             };
         }
 
         function setupCanvas() {
-            const canvas = document.getElementById('void-canvas');
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
-
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
-            ctx.clearRect(0,0, canvas.width, canvas.height);
-
+            const canvas = document.getElementById('void-canvas'); const ctx = canvas.getContext('2d'); let drawing = false;
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; ctx.clearRect(0,0, canvas.width, canvas.height);
             canvas.onmousedown = canvas.ontouchstart = (e) => { e.preventDefault(); drawing = true; strokePoints = []; };
             canvas.onmouseup = canvas.ontouchend = async (e) => { 
                 e.preventDefault(); drawing = false; 
-                if (strokePoints.length > 3) {
-                    await sendAnswerToServer(null, { points: strokePoints, width: canvas.width });
-                }
+                if (strokePoints.length > 3) { await sendAnswerToServer(null, { points: strokePoints, width: canvas.width }); }
             };
             canvas.onmousemove = canvas.ontouchmove = (e) => {
                 if (!drawing) return; e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX);
                 const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                
-                const pt = { x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) };
-                strokePoints.push(pt);
-                
-                ctx.fillStyle = '#bc9855';
-                ctx.fillRect(pt.x, pt.y, 4, 4);
+                const pt = { x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) }; strokePoints.push(pt);
+                ctx.fillStyle = '#bc9855'; ctx.fillRect(pt.x, pt.y, 4, 4);
             };
         }
 
         function setupKineticGhost() {
-            const canvas = document.getElementById('void-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight; 
-
+            const canvas = document.getElementById('void-canvas'); const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; 
             const letters = ["V", "O", "R", "T", "E", "X"];
-
             function processFrame() {
                 if (currentLevelIndex < 15) return;
-
-                ctx.fillStyle = 'rgba(12, 12, 14, 0.2)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+                ctx.fillStyle = 'rgba(12, 12, 14, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 const time = performance.now();
-
-                // Исправлено: LEVEL 23 (VORTEX) — это индекс 22 в массиве JavaScript
                 if (currentLevelIndex === 22) {
-                    const interval = 3000;
-                    const currentLetterIdx = Math.floor((time / interval) % letters.length);
-                    
-                    const totalLetters = letters.length;
-                    const rectWidth = 50;
-                    const rectHeight = 60;
-                    const gap = 15;
-                    
+                    const interval = 3000; const currentLetterIdx = Math.floor((time / interval) % letters.length);
+                    const totalLetters = letters.length; const rectWidth = 50; const rectHeight = 60; const gap = 15;
                     const totalWidth = (rectWidth * totalLetters) + (gap * (totalLetters - 1));
-                    const startX = (canvas.width - totalWidth) / 2;
-                    const startY = (canvas.height - rectHeight) / 2 - 20;
-
+                    const startX = (canvas.width - totalWidth) / 2; const startY = (canvas.height - rectHeight) / 2 - 20;
                     for (let i = 0; i < totalLetters; i++) {
                         const x = startX + i * (rectWidth + gap);
-                        
                         if (i === currentLetterIdx) {
-                            ctx.strokeStyle = '#bc9855';
-                            ctx.lineWidth = 2;
-                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
-                            
-                            for (let s = 0; s < 40; s++) {
-                                ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.7})`;
-                                ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2);
-                            }
-
-                            ctx.fillStyle = '#fff';
-                            ctx.font = 'bold 28px "Courier New"';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            const glitchX = Math.random() * 4 - 2;
-                            ctx.fillText(letters[i], x + (rectWidth / 2) + glitchX, startY + (rectHeight / 2));
-                        } else {
-                            ctx.strokeStyle = '#18181b';
-                            ctx.lineWidth = 1;
-                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
-                        }
+                            ctx.strokeStyle = '#bc9855'; ctx.lineWidth = 2; ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            for (let s = 0; s < 40; s++) { ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.7})`; ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2); }
+                            ctx.fillStyle = '#fff'; ctx.font = 'bold 28px "Courier New"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                            ctx.fillText(letters[i], x + (rectWidth / 2) + (Math.random() * 4 - 2), startY + (rectHeight / 2));
+                        } else { ctx.strokeStyle = '#18181b'; ctx.lineWidth = 1; ctx.strokeRect(x, startY, rectWidth, rectHeight); }
                     }
                 } else {
                     for (let i = 0; i < 350; i++) {
-                        const x = Math.random() * canvas.width;
-                        const y = Math.random() * canvas.height;
-                        const size = Math.random() * 1.5;
-                        const alpha = Math.random() * 0.12;
-                        ctx.fillStyle = `rgba(188, 152, 85, ${alpha})`;
-                        ctx.fillRect(x, y, size, size);
+                        ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.12})`; ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 1.5, Math.random() * 1.5);
                     }
-
-                    if (Math.random() > 0.88) {
-                        ctx.fillStyle = 'rgba(188, 152, 85, 0.04)';
-                        ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 3);
-                    }
+                    if (Math.random() > 0.88) { ctx.fillStyle = 'rgba(188, 152, 85, 0.04)'; ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 3); }
                 }
                 kineticAnimationFrameId = requestAnimationFrame(processFrame);
             }
@@ -540,29 +468,55 @@
         function fallbackCopy(t) { const ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; document.body.appendChild(ta); ta.focus(); ta.select(); try { document.execCommand('copy'); alert("Game link copied!"); } catch (e) {} document.body.removeChild(ta); }
         
         function resetGame() { 
-            currentLevelIndex = 0; 
-            wrongAttempts = 0; 
-            isSubmitting = false; 
-            document.getElementById('sub-btn').disabled = false;
-            serverLevelData = null; 
-            document.getElementById('victory-screen').classList.remove('active'); 
-            document.getElementById('start-screen').classList.add('active'); 
-            window.updateMyLevelStatus(-1);
+            currentLevelIndex = 0; wrongAttempts = 0; isSubmitting = false; document.getElementById('sub-btn').disabled = false;
+            serverLevelData = null; document.getElementById('victory-screen').classList.remove('active'); document.getElementById('start-screen').classList.add('active'); window.updateMyLevelStatus(-1);
         }
 
         document.getElementById('sub-btn').addEventListener('click', submitAnswer);
         document.getElementById('modal-continue-btn').addEventListener('click', nextLevel);
         document.getElementById('restart-btn').addEventListener('click', resetGame);
         document.getElementById('share-btn').addEventListener('click', copyShareLink);
-        document.getElementById('user-answer').addEventListener('keydown', async (e) => { 
-            if (e.key === 'Enter') { 
-                if (document.getElementById('success-modal').classList.contains('active')) {
-                    nextLevel(); 
-                } else {
-                    await submitAnswer(); 
-                }
-            } 
+        document.getElementById('user-answer').addEventListener('keydown', async (e) => { if (e.key === 'Enter') { if (document.getElementById('success-modal').classList.contains('active')) nextLevel(); else await submitAnswer(); } });
+
+        // === ИНИЦИАЛИЗАЦИЯ И УПРАВЛЕНИЕ ЧАТОМ ===
+        openChatBtn.addEventListener('click', () => {
+            chatModal.classList.add('active');
+            setTimeout(() => { chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight; chatInputEl.focus(); }, 50);
         });
+        closeChatBtn.addEventListener('click', () => chatModal.classList.remove('active'));
+        chatModal.addEventListener('click', (e) => { if (e.target === chatModal) chatModal.classList.remove('active'); });
+
+        async function sendChatMessage() {
+            const text = chatInputEl.value.trim();
+            if (!text || text.length > 150) return;
+            try {
+                const newMessageRef = push(chatRef);
+                await set(newMessageRef, { user: playerNickname, message: text, level: currentLevelIndex + 1, timestamp: Date.now() });
+                chatInputEl.value = '';
+            } catch (err) { console.error("Chat sync failed:", err); }
+        }
+
+        chatSendBtnEl.addEventListener('click', sendChatMessage);
+        chatInputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.stopPropagation(); sendChatMessage(); } });
+
+        const recentChatsQuery = query(chatRef, limitToLast(40));
+        onValue(recentChatsQuery, (snap) => {
+            chatMessagesEl.innerHTML = ''; const data = snap.val();
+            if (data) {
+                Object.values(data).forEach((msg) => {
+                    const msgEl = document.createElement('div');
+                    msgEl.innerHTML = `<span style="color: var(--accent); font-weight: bold;">[LVL ${msg.level}] ${msg.user}:</span> <span style="color: #fff;">${escapeHtml(msg.message)}</span>`;
+                    chatMessagesEl.appendChild(msgEl);
+                });
+                chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+            } else {
+                chatMessagesEl.innerHTML = `<div style="color: var(--text-muted);">NO ACTIVE TRANSMISSIONS...</div>`;
+            }
+        });
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
     </script>
 </body>
 </html>
