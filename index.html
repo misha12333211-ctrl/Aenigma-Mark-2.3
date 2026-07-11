@@ -88,16 +88,41 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
 
         /* Стиль для кнопки чата в шапке */
-        #open-chat-btn {
-            border-color: var(--border) !important;
-        }
+        #open-chat-btn { border-color: var(--border) !important; }
         #open-chat-btn:hover {
             border-color: var(--accent) !important;
             background: rgba(188, 152, 85, 0.08) !important;
             box-shadow: 0 0 12px rgba(188, 152, 85, 0.25);
         }
-        #open-chat-btn:hover svg {
-            transform: scale(1.08);
+        #open-chat-btn:hover svg { transform: scale(1.08); }
+
+        /* Стили для элементов чата и автопереноса слов */
+        .chat-msg-row {
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+        .my-msg {
+            cursor: pointer;
+            transition: background 0.2s;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+        .my-msg:hover {
+            background: rgba(188, 152, 85, 0.15);
+        }
+
+        /* Адаптивная мобильная верстка */
+        @media (max-width: 600px) {
+            body { padding: 20px 10px; }
+            main { padding: 30px 15px; }
+            header { padding-bottom: 15px; }
+            .modal-card { padding: 25px 15px; }
+            #chat-messages { height: 300px !important; padding: 10px !important; }
+            .chat-input-container { flex-direction: column; gap: 8px !important; }
+            #chat-input { text-align: left !important; padding: 12px !important; }
+            #chat-send-btn { width: 100%; padding: 12px !important; }
         }
     </style>
 </head>
@@ -107,7 +132,6 @@
         <div class="stats">CORE:// AENIGMA_MARK_2.3</div>
         <div style="display: flex; gap: 15px; align-items: center;">
             <div class="stats">ATTEMPTS:// <strong id="attempt-counter">0</strong>/10</div>
-            <!-- Жёлтая SVG-иконка чата без текста -->
             <button id="open-chat-btn" title="Open Communication Link" style="background: none; border: 1px solid var(--border); padding: 6px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; border-radius: 2px;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transition: transform 0.3s;">
                     <path d="M18 2H6C3.79 2 2 3.79 2 6v6c0 2.21 1.79 4 4 4h1v4l4-4h7c2.21 0 4-1.79 4-4V6c0-2.21-1.79-4-4-4z" fill="var(--accent)"/>
@@ -157,7 +181,6 @@
         </div>
     </main>
 
-    <!-- Успешное прохождение -->
     <div id="success-modal" class="modal-overlay">
         <div class="modal-card">
             <h2>ACCESS GRANTED</h2>
@@ -166,20 +189,21 @@
         </div>
     </div>
 
-    <!-- Новая модалка терминального чата -->
+    <!-- Терминальный адаптивный чат -->
     <div id="chat-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 550px; width: 95%; border-color: var(--accent); box-shadow: 0 0 30px rgba(188, 152, 85, 0.15);">
             <h2 style="color: var(--accent); font-size: 1.2rem; margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between;">
-                <span>// COMM_LINK_ESTABLISHED</span>
+                <span id="chat-title-mode">// COMM_LINK_ESTABLISHED</span>
                 <span id="close-chat-btn" style="cursor: pointer; color: var(--text-muted); font-size: 1rem;">[X]</span>
             </h2>
             
-            <div id="chat-messages" style="height: 250px; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 15px; font-size: 0.85rem; color: #a1a1aa; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
-                <!-- Сообщения грузятся сюда -->
+            <!-- Окно чата с автопереносом длинного текста -->
+            <div id="chat-messages" style="height: 280px; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 15px; font-size: 0.85rem; color: #a1a1aa; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; text-align: left;">
+                <!-- Сообщения подгружаются динамически -->
             </div>
             
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="chat-input" placeholder="ENTER TRANSMISSION..." autocomplete="off" style="margin-bottom: 0; padding: 12px; font-size: 0.95rem; text-align: left;">
+            <div class="chat-input-container" style="display: flex; gap: 10px;">
+                <input type="text" id="chat-input" placeholder="ENTER TRANSMISSION..." autocomplete="off" style="margin-bottom: 0; padding: 12px; font-size: 0.95rem; text-align: center;">
                 <button id="chat-send-btn" class="btn" style="padding: 12px 25px; font-size: 0.85rem;">SEND</button>
             </div>
         </div>
@@ -195,7 +219,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-        import { getDatabase, ref, onValue, push, onDisconnect, set, runTransaction, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+        import { getDatabase, ref, onValue, push, onDisconnect, set, remove, runTransaction, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkFTLYk0Jd02thV6DLEzB8hJF-B9IRx68",
@@ -224,15 +248,21 @@
         let serverLevelData = null;
         let myUserRef = null;
 
-        const playerNickname = `OPERATOR_${Math.floor(100 + Math.random() * 900)}`;
+        // Генерация или сохранение постоянного никнейма в сессии
+        if(!sessionStorage.getItem('aenigma_nick')) {
+            sessionStorage.setItem('aenigma_nick', `OPERATOR_${Math.floor(100 + Math.random() * 900)}`);
+        }
+        const playerNickname = sessionStorage.getItem('aenigma_nick');
 
-        // Доступы к элементам модалки чата
+        // Модули чата
+        let editMessageKey = null; // Хранит ключ редактируемого сообщения
         const chatModal = document.getElementById('chat-modal');
         const openChatBtn = document.getElementById('open-chat-btn');
         const closeChatBtn = document.getElementById('close-chat-btn');
         const chatMessagesEl = document.getElementById('chat-messages');
         const chatInputEl = document.getElementById('chat-input');
         const chatSendBtnEl = document.getElementById('chat-send-btn');
+        const chatTitleMode = document.getElementById('chat-title-mode');
 
         onValue(likesRef, (snap) => { 
             const serverLikes = snap.val() || 0;
@@ -483,29 +513,86 @@
             chatModal.classList.add('active');
             setTimeout(() => { chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight; chatInputEl.focus(); }, 50);
         });
-        closeChatBtn.addEventListener('click', () => chatModal.classList.remove('active'));
-        chatModal.addEventListener('click', (e) => { if (e.target === chatModal) chatModal.classList.remove('active'); });
+        closeChatBtn.addEventListener('click', () => {
+            chatModal.classList.remove('active');
+            resetEditMode();
+        });
+        chatModal.addEventListener('click', (e) => { if (e.target === chatModal) { chatModal.classList.remove('active'); resetEditMode(); } });
+
+        function resetEditMode() {
+            editMessageKey = null;
+            chatTitleMode.textContent = "// COMM_LINK_ESTABLISHED";
+            chatTitleMode.style.color = "var(--accent)";
+            chatInputEl.placeholder = "ENTER TRANSMISSION...";
+            chatInputEl.value = "";
+            chatSendBtnEl.textContent = "SEND";
+        }
 
         async function sendChatMessage() {
             const text = chatInputEl.value.trim();
             if (!text || text.length > 150) return;
-            try {
-                const newMessageRef = push(chatRef);
-                await set(newMessageRef, { user: playerNickname, message: text, level: currentLevelIndex + 1, timestamp: Date.now() });
-                chatInputEl.value = '';
-            } catch (err) { console.error("Chat sync failed:", err); }
+
+            if (editMessageKey) {
+                // Если мы в режиме редактирования
+                try {
+                    const specificMsgRef = ref(db, `chat_messages/${editMessageKey}`);
+                    await set(specificMsgRef, { user: playerNickname, message: text, level: currentLevelIndex + 1, timestamp: Date.now() });
+                    resetEditMode();
+                } catch(err) { console.error("Edit failed:", err); }
+            } else {
+                // Обычная отправка
+                try {
+                    const newMessageRef = push(chatRef);
+                    await set(newMessageRef, { user: playerNickname, message: text, level: currentLevelIndex + 1, timestamp: Date.now() });
+                    chatInputEl.value = '';
+                } catch (err) { console.error("Chat sync failed:", err); }
+            }
         }
 
         chatSendBtnEl.addEventListener('click', sendChatMessage);
         chatInputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.stopPropagation(); sendChatMessage(); } });
 
+        // Глобальный обработчик кликов для контекстного меню сообщений
+        window.handleMessageClick = function(key, currentText) {
+            const action = prompt("Type 'edit' to change message or 'del' to delete it:", "edit");
+            if (!action) return;
+
+            if (action.trim().toLowerCase() === 'edit') {
+                editMessageKey = key;
+                chatTitleMode.textContent = "// EDIT_MODE_ACTIVE";
+                chatTitleMode.style.color = "#ef4444";
+                chatInputEl.value = currentText;
+                chatInputEl.placeholder = "EDITING TRANSMISSION...";
+                chatSendBtnEl.textContent = "SAVE";
+                chatInputEl.focus();
+            } else if (action.trim().toLowerCase() === 'del') {
+                if (confirm("Disconnect this piece of data permanently?")) {
+                    const specificMsgRef = ref(db, `chat_messages/${key}`);
+                    remove(specificMsgRef).then(() => {
+                        if(editMessageKey === key) resetEditMode();
+                    }).catch(e => console.error(e));
+                }
+            }
+        }
+
         const recentChatsQuery = query(chatRef, limitToLast(40));
         onValue(recentChatsQuery, (snap) => {
             chatMessagesEl.innerHTML = ''; const data = snap.val();
             if (data) {
-                Object.values(data).forEach((msg) => {
+                Object.entries(data).forEach(([key, msg]) => {
                     const msgEl = document.createElement('div');
-                    msgEl.innerHTML = `<span style="color: var(--accent); font-weight: bold;">[LVL ${msg.level}] ${msg.user}:</span> <span style="color: #fff;">${escapeHtml(msg.message)}</span>`;
+                    msgEl.className = "chat-msg-row";
+                    
+                    const isMyMessage = (msg.user === playerNickname);
+                    const clickableClass = isMyMessage ? "my-msg" : "";
+                    const clickAttr = isMyMessage ? `onclick="window.handleMessageClick('${key}', '${msg.message.replace(/'/g, "\\'")}')" title="Click to Edit/Delete"` : "";
+
+                    msgEl.innerHTML = `
+                        <span class="${clickableClass}" ${clickAttr}>
+                            <span style="color: var(--accent); font-weight: bold;">[LVL ${msg.level}] ${msg.user}:</span> 
+                            <span style="color: #fff;">${escapeHtml(msg.message)}</span>
+                        </span>
+                    `;
                     chatMessagesEl.appendChild(msgEl);
                 });
                 chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
