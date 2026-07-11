@@ -531,3 +531,500 @@
     </script>
 </body>
 </html>
+            margin-bottom: 25px; outline: none; text-align: center; letter-spacing: 2px; font-size: 1.1rem;
+            transition: all 0.3s ease; -webkit-user-select: text; user-select: text; position: relative; z-index: 20;
+        }
+        input[type="text"]:focus { border-color: var(--accent); background: #09090b; }
+        .btn-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; position: relative; z-index: 20; }
+        .btn {
+            background: none; border: 1px solid var(--accent); color: var(--accent); padding: 15px 35px;
+            cursor: pointer; font-weight: bold; letter-spacing: 3px; transition: all 0.3s; font-size: 0.9rem;
+            touch-action: manipulation;
+        }
+        .btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px rgba(188, 152, 85, 0.4); }
+        .btn.secondary { border-color: var(--text-muted); color: var(--text-muted); }
+        .btn.secondary:hover { background: var(--text-muted); color: var(--bg-color); }
+        
+        .clicker-btn {
+            width: 100px; height: 100px; border-radius: 50%; border: 2px dashed var(--accent); background: none;
+            color: var(--accent); font-size: 2rem; cursor: pointer; margin: 20px auto; display: none;
+            transition: all 0.2s; touch-action: none; position: relative; z-index: 20;
+        }
+        .clicker-btn:active { background: rgba(188, 152, 85, 0.2); transform: scale(0.95); }
+        
+        #void-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: crosshair; display: none; touch-action: none; }
+        
+        .antiai-trap {
+            position: absolute; overflow: hidden; clip: rect(0, 0, 0, 0); width: 1px; height: 1px; margin: -1px; color: transparent; background: transparent;
+        }
+        .hint-box { display: none; margin-top: 40px; padding-top: 20px; border-top: 1px dashed var(--border); color: var(--text-muted); font-size: 0.8rem; text-align: left; position: relative; z-index: 20; }
+        .hint-box.visible { display: block; }
+        .modal-overlay {
+            display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 7, 0.9);
+            z-index: 1000; justify-content: center; align-items: center; opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; visibility: visible; }
+        .modal-card { background: var(--card-bg); border: 1px solid var(--success); padding: 40px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 0 30px rgba(21, 128, 61, 0.2); }
+        .modal-card h2 { color: #22c55e; font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 15px; }
+        .modal-card p { margin-bottom: 25px; }
+        .share-section { margin-top: 35px; padding-top: 25px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .qr-frame { background: #fff; padding: 10px; border-radius: 4px; width: 170px; height: 170px; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        .qr-frame img { width: 150px; height: 150px; }
+        footer { margin-top: 40px; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
+        .like-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 10px 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s; }
+        .like-btn:hover { border-color: var(--accent); color: var(--accent); }
+        
+        .donate-btn {
+            background: none;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        .donate-btn:hover {
+            background: var(--accent);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(188, 152, 85, 0.4);
+        }
+
+        .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="stats">CORE:// AENIGMA_MARK_2.3</div>
+        <div class="stats">ATTEMPTS:// <strong id="attempt-counter">0</strong>/10</div>
+    </header>
+
+    <main id="main-container">
+        <canvas id="void-canvas"></canvas>
+
+        <div id="start-screen" class="screen active">
+            <h1>AENIGMA <span style="color: var(--accent);">[Mark 2.3]</span></h1>
+            <p>Welcome to the 24-level module. Levels 1-15 contain logical riddles. Levels 16-24 enter the "HELL SECTOR" -- ancient ciphers, raw interactive action, zero hints, minimal text. Neural networks cannot parse this sector. Good luck.</p>
+            <button class="btn" onclick="window.startGame()">INITIALIZE</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <h1 id="level-title">LEVEL X</h1>
+            <div id="level-desc" style="white-space: pre-line; line-height: 1.8; margin-bottom: 35px; font-size: 0.95rem; position: relative; z-index: 20;">Loading...</div>
+            
+            <button id="clicker-node" class="clicker-btn">⚡</button>
+            <input type="text" id="user-answer" placeholder="ENTER SOLUTION..." autocomplete="off">
+            
+            <div class="btn-container" id="control-block">
+                <button id="sub-btn" class="btn">SUBMIT</button>
+            </div>
+            
+            <div id="hint-box" class="hint-box">
+                <strong>ANALYSIS MODULE:</strong> <span id="level-hint">...</span>
+            </div>
+        </div>
+
+        <div id="victory-screen" class="screen">
+            <h1>GOD MODE ENGAGED</h1>
+            <p>Unbelievable. You conquered all 24 layers, bypassing the anti-AI sector. You have proven absolute cognitive dominance over machine logic.</p>
+            <div class="btn-container">
+                <button class="btn" id="restart-btn">RESTART MODULE</button>
+                <button class="btn secondary" id="share-btn">COPY SHARE LINK</button>
+            </div>
+            <div class="share-section">
+                <div class="stats">CHALLENGE YOUR FRIENDS:</div>
+                <div class="qr-frame"><img id="qr-code-img" src="" alt="Loading QR..."></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>ACCESS GRANTED</h2>
+            <p id="modal-message">...</p>
+            <button class="btn" id="modal-continue-btn">CONTINUE</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="stats">TOTAL ONLINE: <strong id="online-count">0</strong></div>
+        <div class="stats">ON THIS LAYER: <strong id="layer-online-count">0</strong></div>
+        <div class="stats">COMPLETED U24: <strong id="completed-24-count">0</strong></div>
+        <button id="like-btn" class="like-btn">❤ SYSTEM_LIKES: <span id="likes-count">0</span></button>
+        <a href="https://messenger.online.sberbank.ru/sl/kzEsbRgBZb6cf7Upy" target="_blank" class="donate-btn">☕ SUPPORT_SYSTEM</a>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        import { getDatabase, ref, onValue, push, onDisconnect, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkFTLYk0Jd02thV6DLEzB8hJF-B9IRx68",
+            authDomain: "aenigma-mark-23.firebaseapp.com",
+            databaseURL: "https://aenigma-mark-23-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "aenigma-mark-23", storageBucket: "aenigma-mark-23.firebasestorage.app",
+            messagingSenderId: "318632324088", appId: "1:318632324088:web:c9ff426bac663a64ca840d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const API_URL = "https://aenigma-server.onrender.com"; 
+
+        const likesRef = ref(db, 'counters/likes');
+        const connectedRef = ref(db, ".info/connected");
+        const onlineUsersRef = ref(db, "online_users");
+        const completed24Ref = ref(db, 'counters/completed24');
+
+        let currentLevelIndex = 0;
+        let wrongAttempts = 0;
+        let clickPattern = [];
+        let strokePoints = [];
+        let kineticAnimationFrameId = null;
+        let serverLevelData = null;
+        let myUserRef = null;
+
+        onValue(likesRef, (snap) => { 
+            const serverLikes = snap.val() || 0;
+            document.getElementById('likes-count').innerText = serverLikes; 
+        });
+
+        onValue(completed24Ref, (snap) => {
+            document.getElementById('completed-24-count').innerText = snap.val() || 0;
+        });
+
+        document.getElementById('like-btn').addEventListener('click', async () => {
+            const likeBtnEl = document.getElementById('like-btn');
+            
+            if (localStorage.getItem('aenigma_liked')) {
+                likeBtnEl.classList.add('shake');
+                setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
+                return;
+            }
+
+            likeBtnEl.style.pointerEvents = 'none';
+
+            try {
+                await runTransaction(likesRef, (currentValue) => {
+                    return (currentValue || 0) + 1;
+                });
+                
+                localStorage.setItem('aenigma_liked', 'true');
+                likeBtnEl.style.color = 'var(--accent)';
+                likeBtnEl.style.borderColor = 'var(--accent)';
+            } catch (err) { 
+                console.error("Like transaction failed:", err);
+                likeBtnEl.classList.add('shake');
+                setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
+            } finally {
+                likeBtnEl.style.pointerEvents = 'auto';
+            }
+        });
+
+        if (localStorage.getItem('aenigma_liked')) {
+            document.getElementById('like-btn').style.color = 'var(--accent)';
+            document.getElementById('like-btn').style.borderColor = 'var(--accent)';
+        }
+
+        window.updateMyLevelStatus = function(levelIndex) {
+            if (myUserRef) {
+                set(myUserRef, { active: true, level: levelIndex });
+            }
+        }
+
+        onValue(connectedRef, (snap) => {
+            if (snap.val() === true) {
+                myUserRef = push(onlineUsersRef);
+                set(myUserRef, { active: true, level: -1 });
+                onDisconnect(myUserRef).remove();
+            }
+        });
+
+        onValue(onlineUsersRef, (snap) => {
+            try {
+                const data = typeof snap.val === 'function' ? snap.val() : snap;
+                let totalOnline = 0;
+                let layerOnline = 0;
+
+                if (data) {
+                    const users = Object.values(data);
+                    totalOnline = users.length;
+                    
+                    users.forEach(user => {
+                        if (user && user.level === currentLevelIndex) {
+                            layerOnline++;
+                        }
+                    });
+                } 
+                document.getElementById('online-count').innerText = totalOnline;
+                document.getElementById('layer-online-count').innerText = layerOnline;
+            } catch (err) {
+                console.error("Online formatting fail fallback engaged:", err);
+                document.getElementById('online-count').innerText = 1;
+                document.getElementById('layer-online-count').innerText = 1;
+            }
+        });
+
+        window.startGame = function() {
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            loadLevelFromServer();
+        }
+
+        async function loadLevelFromServer() {
+            if (kineticAnimationFrameId) { cancelAnimationFrame(kineticAnimationFrameId); kineticAnimationFrameId = null; }
+
+            try {
+                const response = await fetch(`${API_URL}/getLevelData?index=${currentLevelIndex}`);
+                const data = await response.json();
+
+                if (data.finished) { showVictoryScreen(); return; }
+                serverLevelData = data;
+
+                window.updateMyLevelStatus(currentLevelIndex);
+
+                document.getElementById('level-title').textContent = data.title;
+                document.getElementById('level-desc').innerHTML = data.desc;
+                document.getElementById('level-hint').textContent = data.hint;
+                
+                const inputField = document.getElementById('user-answer');
+                const clickBtn = document.getElementById('clicker-node');
+                const ctrlBlock = document.getElementById('control-block');
+                const canvas = document.getElementById('void-canvas');
+
+                inputField.style.display = 'block'; inputField.value = '';
+                clickBtn.style.display = 'none'; ctrlBlock.style.display = 'flex';
+                canvas.style.display = 'none'; canvas.style.pointerEvents = 'auto'; 
+                
+                if (currentLevelIndex !== 23) {
+                    wrongAttempts = 0;
+                    document.getElementById('attempt-counter').textContent = "0";
+                }
+                document.getElementById('hint-box').classList.remove('visible');
+
+                if (currentLevelIndex === 18) {
+                    inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; clickBtn.style.display = 'block';
+                    setupClicker();
+                }
+
+                if (currentLevelIndex === 19) {
+                    inputField.style.display = 'none'; ctrlBlock.style.display = 'none'; canvas.style.display = 'block';
+                    setupCanvas();
+                }
+
+                if (currentLevelIndex >= 15 && currentLevelIndex !== 19) { 
+                    canvas.style.display = 'block';
+                    canvas.style.pointerEvents = 'none'; 
+                    setupKineticGhost();
+                }
+
+                if (inputField.style.display !== 'none') inputField.focus();
+            } catch (err) { console.error(err); }
+        }
+
+        async function submitAnswer() {
+            const inputField = document.getElementById('user-answer');
+            if (inputField.style.display === 'none') return;
+            if (inputField.value.trim() === "") return;
+            
+            if (currentLevelIndex === 23) {
+                await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
+            } else {
+                await sendAnswerToServer(inputField.value);
+            }
+        }
+
+        async function sendAnswerToServer(answerString, rawData = null) {
+            try {
+                const response = await fetch(`${API_URL}/checkAnswer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ index: currentLevelIndex, answer: answerString, rawData: rawData })
+                });
+                const result = await response.json();
+                if (result.success) triggerSuccess(); else triggerFail();
+            } catch (err) { console.error(err); }
+        }
+
+        function triggerSuccess() {
+            document.getElementById('modal-message').textContent = `Layer ${currentLevelIndex + 1} dismantled. Continuing infiltration...`;
+            document.getElementById('success-modal').classList.add('active');
+        }
+
+        function triggerFail() {
+            const el = document.getElementById('user-answer').style.display !== 'none' ? document.getElementById('user-answer') : document.getElementById('clicker-node');
+            el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400);
+            wrongAttempts++; document.getElementById('attempt-counter').textContent = wrongAttempts;
+            if (wrongAttempts >= 10 && currentLevelIndex < 15) document.getElementById('hint-box').classList.add('visible');
+        }
+
+        function nextLevel() {
+            document.getElementById('success-modal').classList.remove('active');
+            currentLevelIndex++; loadLevelFromServer();
+        }
+
+        async function showVictoryScreen() {
+            document.getElementById('void-canvas').style.display = 'none';
+            document.getElementById('clicker-node').style.display = 'none';
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('victory-screen').classList.add('active');
+            generateQR();
+            
+            window.updateMyLevelStatus(99); 
+            
+            try {
+                await runTransaction(completed24Ref, (currentValue) => {
+                    return (currentValue || 0) + 1;
+                });
+            } catch(e) { 
+                console.error("Failed to log victory directly to Firebase", e); 
+            }
+        }
+
+        function setupClicker() {
+            clickPattern = [];
+            const clickBtn = document.getElementById('clicker-node');
+            let lastClickTime = 0;
+            
+            clickBtn.onmousedown = clickBtn.ontouchstart = (e) => { e.preventDefault(); lastClickTime = Date.now(); };
+            clickBtn.onmouseup = clickBtn.ontouchend = async (e) => {
+                e.preventDefault();
+                const duration = Date.now() - lastClickTime;
+                clickPattern.push(duration);
+                if (clickPattern.length > 9) clickPattern.shift();
+                
+                if (clickPattern.length === 9) {
+                    await sendAnswerToServer(null, { timings: clickPattern });
+                    clickPattern = [];
+                }
+            };
+        }
+
+        function setupCanvas() {
+            const canvas = document.getElementById('void-canvas');
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+
+            canvas.onmousedown = canvas.ontouchstart = (e) => { e.preventDefault(); drawing = true; strokePoints = []; };
+            canvas.onmouseup = canvas.ontouchend = async (e) => { 
+                e.preventDefault(); drawing = false; 
+                if (strokePoints.length > 3) {
+                    await sendAnswerToServer(null, { points: strokePoints, width: canvas.width });
+                }
+            };
+            canvas.onmousemove = canvas.ontouchmove = (e) => {
+                if (!drawing) return; e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                
+                const pt = { x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) };
+                strokePoints.push(pt);
+                
+                ctx.fillStyle = '#bc9855';
+                ctx.fillRect(pt.x, pt.y, 4, 4);
+            };
+        }
+
+        function setupKineticGhost() {
+            const canvas = document.getElementById('void-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight; 
+
+            const letters = ["V", "O", "R", "T", "E", "X"];
+
+            function processFrame() {
+                if (currentLevelIndex < 15) return;
+
+                ctx.fillStyle = 'rgba(12, 12, 14, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const time = performance.now();
+
+                if (currentLevelIndex === 22) {
+                    const interval = 3000;
+                    const currentLetterIdx = Math.floor((time / interval) % letters.length);
+                    
+                    const totalLetters = letters.length;
+                    const rectWidth = 50;
+                    const rectHeight = 60;
+                    const gap = 15;
+                    
+                    const totalWidth = (rectWidth * totalLetters) + (gap * (totalLetters - 1));
+                    const startX = (canvas.width - totalWidth) / 2;
+                    const startY = (canvas.height - rectHeight) / 2 - 20;
+
+                    for (let i = 0; i < totalLetters; i++) {
+                        const x = startX + i * (rectWidth + gap);
+                        
+                        if (i === currentLetterIdx) {
+                            ctx.strokeStyle = '#bc9855';
+                            ctx.lineWidth = 2;
+                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            
+                            for (let s = 0; s < 40; s++) {
+                                ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.7})`;
+                                ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2);
+                            }
+
+                            ctx.fillStyle = '#fff';
+                            ctx.font = 'bold 28px "Courier New"';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            const glitchX = Math.random() * 4 - 2;
+                            ctx.fillText(letters[i], x + (rectWidth / 2) + glitchX, startY + (rectHeight / 2));
+                        } else {
+                            ctx.strokeStyle = '#18181b';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < 350; i++) {
+                        const x = Math.random() * canvas.width;
+                        const y = Math.random() * canvas.height;
+                        const size = Math.random() * 1.5;
+                        const alpha = Math.random() * 0.12;
+                        ctx.fillStyle = `rgba(188, 152, 85, ${alpha})`;
+                        ctx.fillRect(x, y, size, size);
+                    }
+
+                    if (Math.random() > 0.88) {
+                        ctx.fillStyle = 'rgba(188, 152, 85, 0.04)';
+                        ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 3);
+                    }
+                }
+                kineticAnimationFrameId = requestAnimationFrame(processFrame);
+            }
+            processFrame();
+        }
+
+        function getCleanUrl() { return window.location.href.startsWith('file://') ? 'https://google.com' : window.location.href; }
+        function generateQR() { try { document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(getCleanUrl())}&color=bc9855&bgcolor=0c0c0e`; } catch(e){} }
+        function copyShareLink() {
+            const u = window.location.href;
+            if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(u).then(() => alert("Game link copied!")).catch(() => fallbackCopy(u)); } else fallbackCopy(u);
+        }
+        function fallbackCopy(t) { const ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; document.body.appendChild(ta); ta.focus(); ta.select(); try { document.execCommand('copy'); alert("Game link copied!"); } catch (e) {} document.body.removeChild(ta); }
+        
+        function resetGame() { 
+            currentLevelIndex = 0; 
+            wrongAttempts = 0; 
+            serverLevelData = null; 
+            document.getElementById('victory-screen').classList.remove('active'); 
+            document.getElementById('start-screen').classList.add('active'); 
+            window.updateMyLevelStatus(-1);
+        }
+
+        document.getElementById('sub-btn').addEventListener('click', submitAnswer);
+        document.getElementById('modal-continue-btn').addEventListener('click', nextLevel);
+        document.getElementById('restart-btn').addEventListener('click', resetGame);
+        document.getElementById('share-btn').addEventListener('click', copyShareLink);
+        document.getElementById('user-answer').addEventListener('keydown', async (e) => { if (e.key === 'Enter') { if (document.getElementById('success-modal').classList.contains('active')) nextLevel(); else await submitAnswer(); } });
+    </script>
+</body>
+</html>
