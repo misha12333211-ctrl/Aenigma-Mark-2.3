@@ -26,14 +26,29 @@
         body {
             background-color: var(--bg-color); color: var(--text-main); min-height: 100vh;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 40px 20px;
-            overflow-x: hidden; overflow-y: auto;
+            overflow-x: hidden; overflow-y: auto; position: relative;
         }
-        header { width: 100%; max-width: 700px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        
+        /* Кнопка чата перенесена наверх в правый угол */
+        .chat-top-right-container {
+            position: absolute; top: 25px; right: 20px; z-index: 100;
+        }
+        .chat-toggle-btn {
+            background: none; border: 1px solid var(--accent); color: var(--accent); width: 45px; height: 45px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+        }
+        .chat-toggle-btn:hover { background: var(--accent); color: var(--bg-color); }
+        .chat-toggle-btn svg { width: 24px; height: 24px; fill: currentColor; }
+
+        header { width: 100%; max-width: 700px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; padding-right: 55px; }
         .stats { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px; }
         .stats strong { color: var(--accent); }
+        
+        /* Блоки с уровнями и начальный блок ровно по центру на всех устройствах */
         main {
             width: 100%; max-width: 600px; background: var(--card-bg); border: 1px solid var(--border);
             padding: 50px 40px; border-radius: 2px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); text-align: center; position: relative;
+            margin: auto 0; /* Обеспечивает идеальное вертикальное центрирование внутри flex-контейнера */
         }
         .screen { display: none; }
         .screen.active { display: block; }
@@ -68,7 +83,7 @@
         .hint-box { display: none; margin-top: 40px; padding-top: 20px; border-top: 1px dashed var(--border); color: var(--text-muted); font-size: 0.8rem; text-align: left; position: relative; z-index: 20; }
         .hint-box.visible { display: block; }
         
-        /* Модальные окна общие */
+        /* Модальные окна */
         .modal-overlay {
             display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 7, 0.9);
             z-index: 1000; justify-content: center; align-items: center; opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -84,9 +99,15 @@
         
         /* Раздел футера */
         .game-info-container { width: 100%; max-width: 700px; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
-        footer { width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
         
-        /* Стили кнопок футера */
+        /* Опускаем футер еще ниже на мобильных устройствах */
+        footer { 
+            width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 40px; padding-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
+            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+        }
+        .footer-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
+        .footer-link:hover { color: var(--accent); }
+        
         .round-like-btn { width: 45px; height: 45px; border-radius: 50%; background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.65rem; transition: all 0.3s; }
         .round-like-btn:hover { border-color: var(--accent); color: var(--accent); }
         .round-like-btn span { font-size: 0.9rem; line-height: 1; }
@@ -98,18 +119,14 @@
         }
         .donate-btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px rgba(188, 152, 85, 0.4); }
 
-        .chat-toggle-btn {
-            background: none; border: 1px solid var(--accent); color: var(--accent); width: 45px; height: 45px; border-radius: 50%;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
-        }
-        .chat-toggle-btn:hover { background: var(--accent); color: var(--bg-color); }
-        .chat-toggle-btn svg { width: 24px; height: 24px; fill: currentColor; }
-
         /* Модалка ЧАТА */
         .chat-modal-card { background: var(--card-bg); border: 1px solid var(--accent); width: 95%; max-width: 500px; height: 80vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(188, 152, 85, 0.15); }
         .chat-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .chat-header h3 { font-size: 1rem; color: var(--accent); letter-spacing: 2px; }
-        .chat-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
+        .chat-header-actions { display: flex; align-items: center; gap: 15px; }
+        .chat-rules-btn { background: none; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 4px 8px; font-size: 0.7rem; cursor: pointer; }
+        .chat-rules-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .chat-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s; line-height: 1; }
         .chat-close:hover { color: var(--error); }
         
         .chat-nickname-section { padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; }
@@ -128,19 +145,45 @@
         .chat-action-link:hover { color: #fff; }
         .chat-action-link.report-link:hover { color: #f59e0b; }
         
-        .chat-input-section { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .chat-input-section { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; position: relative; }
         .chat-input-section input { margin-bottom: 0 !important; padding: 12px !important; font-size: 0.95rem !important; text-align: left !important; }
         .chat-input-section .btn { padding: 12px 20px !important; font-size: 0.85rem !important; letter-spacing: 1px !important; }
+        
+        /* Визуальный таймер поверх кнопки отправки */
+        .chat-timer-overlay {
+            position: absolute; right: 15px; top: 15px; bottom: 15px; background: rgba(12, 12, 14, 0.9);
+            border: 1px solid var(--text-muted); color: var(--text-muted); display: none; align-items: center;
+            justify-content: center; font-size: 0.85rem; font-weight: bold; padding: 0 20px; pointer-events: none;
+        }
 
-        /* Диалоговые окна действий чата вместо alert */
         .chat-dialog-card { max-width: 400px; border-color: var(--border); }
         .chat-dialog-card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 15px; letter-spacing: 1px; }
 
+        /* Модалка для политик и правил (текстовая) */
+        .text-modal-card { max-width: 550px; width: 90%; max-height: 75vh; overflow-y: auto; text-align: left; border: 1px solid var(--accent); background: var(--card-bg); padding: 30px; }
+        .text-modal-card h2 { color: var(--accent); font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .text-modal-card p, .text-modal-card li { font-size: 0.85rem; color: var(--text-main); line-height: 1.6; margin-bottom: 12px; text-align: justify; }
+        .text-modal-card ul { margin-left: 20px; margin-bottom: 15px; }
+
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+
+        /* Дополнительный сдвиг футера на мобильных экранах */
+        @media (max-width: 600px) {
+            body { padding: 30px 15px 60px 15px; }
+            footer { margin-top: 80px; padding-top: 30px; }
+            .chat-top-right-container { top: 15px; right: 15px; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Контейнер кнопки чата в верхнем правом углу -->
+    <div class="chat-top-right-container">
+        <button id="chat-toggle-btn" class="chat-toggle-btn">
+            <svg viewBox="0 0 512 512"><path d="M448 0H64C28.7 0 0 28.7 0 64v288c0 35.3 28.7 64 64 64h96v84c0 9.8 11.2 15.5 19.1 9.7L304 416h144c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64zM176 240c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm112 0c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm112 0c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24z" opacity="0.9"/><path d="M416 160H224c-17.7 0-32 14.3-32 32v160c0 17.7 14.3 32 32 32h160l68.7 51.5c7.9 5.9 19.3.2 19.3-9.6V384c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-128 96c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zm64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zm64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z" opacity="0.6"/></svg>
+        </button>
+    </div>
 
     <header>
         <div class="stats">CORE:// AENIGMA_MARK_2.3</div>
@@ -199,7 +242,10 @@
         <div class="chat-modal-card">
             <div class="chat-header">
                 <h3>MODULE://SECURE_CHAT</h3>
-                <button class="chat-close" id="chat-close-btn">&times;</button>
+                <div class="chat-header-actions">
+                    <button class="chat-rules-btn" id="chat-rules-open-btn">RULES</button>
+                    <button class="chat-close" id="chat-close-btn">&times;</button>
+                </div>
             </div>
             <div class="chat-nickname-section">
                 <input type="text" id="chat-nick-input" placeholder="Change nickname..." maxlength="16" autocomplete="off">
@@ -209,11 +255,12 @@
             <div class="chat-input-section">
                 <input type="text" id="chat-msg-input" placeholder="Type a message (3-16 chars)..." autocomplete="off">
                 <button class="btn" id="chat-send-btn">SEND</button>
+                <div class="chat-timer-overlay" id="chat-timer-el">10s</div>
             </div>
         </div>
     </div>
 
-    <!-- Модалка для ИЗМЕНЕНИЯ сообщения -->
+    <!-- Модалка ИЗМЕНЕНИЯ сообщения -->
     <div id="chat-edit-modal" class="modal-overlay">
         <div class="modal-card chat-dialog-card">
             <h3>EDIT MESSAGE</h3>
@@ -225,7 +272,7 @@
         </div>
     </div>
 
-    <!-- Модалка для УДАЛЕНИЯ сообщения -->
+    <!-- Модалка УДАЛЕНИЯ сообщения -->
     <div id="chat-delete-modal" class="modal-overlay">
         <div class="modal-card chat-dialog-card" style="border-color: var(--error);">
             <h3 style="color: #ef4444;">DELETE MESSAGE?</h3>
@@ -237,7 +284,7 @@
         </div>
     </div>
 
-    <!-- Модалка для ЖАЛОБЫ -->
+    <!-- Модалка ЖАЛОБЫ (Formspree) -->
     <div id="chat-report-modal" class="modal-overlay">
         <div class="modal-card chat-dialog-card" style="border-color: #f59e0b;">
             <h3 style="color: #f59e0b;">SUBMIT REPORT</h3>
@@ -249,27 +296,51 @@
         </div>
     </div>
 
-    <!-- Отделенный блок уровней и инфо-активности от футера -->
+    <!-- Модалка ЖЁСТКИХ ПРАВИЛ чата -->
+    <div id="rules-modal" class="modal-overlay">
+        <div class="text-modal-card">
+            <h2>AENIGMA CHAT PROTOCOL & RULES</h2>
+            <p><strong>Внимание оператора!</strong> Внутрисистемный шлюз общения находится под строгим контролем автоматических алгоритмов. Нарушение следующих правил приведет к перманентной блокировке сетевого ID:</p>
+            <ul>
+                <li><strong>1. Запрет политики и конфликтов:</strong> Строго табуированы любые обсуждения политических событий, упоминания войн, лидеров государств и агрессивный национализм на любом языке мира.</li>
+                <li><strong>2. Запрет рекламы и спама:</strong> Запрещена отправка ссылок, кодов, приглашений, спам-рассылок и рекламы сторонних ресурсов.</li>
+                <li><strong>3. Личные данные:</strong> Запрещен ввод номеров телефонов, адресов, аккаунтов мессенджеров и иной конфиденциальной информации.</li>
+                <li><strong>4. Графический и Юникод спам:</strong> Использование нацистской символики (свастик), псевдографики и ломающих интерфейс нечитаемых символов карается мгновенно.</li>
+                <li><strong>5. Ограничение темпа:</strong> Отправка сообщений разрешена раз в 10 секунд. Длина сообщений: от 3 до 16 символов.</li>
+            </ul>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" id="rules-close-btn">I UNDERSTAND</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ -->
+    <div id="privacy-modal" class="modal-overlay">
+        <div class="text-modal-card">
+            <h2>PRIVACY POLICY // AENIGMA MARK 2.3</h2>
+            <p>Настоящая Политика конфиденциальности регулирует порядок обработки и защиты данных пользователей веб-ресурса https://aenigma-mark-2-3.onrender.com/.</p>
+            <p><strong>1. Сбор информации:</strong> Мы не собираем личную информацию пользователей (имена, фамилии, адреса электронной почты или номера телефонов). Для работы интерактивного чата и отображения онлайна используются случайно генерируемые сервером идентификаторы сессии (UID), сохраняемые локально на вашем устройстве (LocalStorage).</p>
+            <p><strong>2. Использование данных чата:</strong> Все сообщения, отправляемые в чат, проходят мгновенную автоматическую фильтрацию на сервере. Опубликованные сообщения содержат только выбранный вами псевдоним (никнейм) и текущий игровой уровень.</p>
+            <p><strong>3. Жалобы и безопасность:</strong> При отправке жалобы на нарушения (Report), данные передаются на защищенный почтовый ящик модерации fatago78@gmail.com с помощью шифрованного API Formspree.</p>
+            <p><strong>4. Сторонние сервисы:</strong> Сайт использует базу данных Firebase Realtime Database исключительно для синхронизации игровых счетчиков и сообщений чата в реальном времени.</p>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" id="privacy-close-btn">ACCEPT & CLOSE</button>
+            </div>
+        </div>
+    </div>
+
     <div class="game-info-container">
         <div class="stats">TOTAL ONLINE: <strong id="online-count">0</strong></div>
         <div class="stats">ON THIS LAYER: <strong id="layer-online-count">0</strong></div>
         <div class="stats">COMPLETED U24: <strong id="completed-24-count">0</strong></div>
         
-        <!-- Кнопка лайков: теперь круглая, только сердце и счетчик -->
         <button id="like-btn" class="round-like-btn"><span>❤</span><strong id="likes-count">0</strong></button>
-        
-        <!-- Переименованная кнопка поддержки -->
         <a href="https://messenger.online.sberbank.ru/sl/kzEsbRgBZb6cf7Upy" target="_blank" class="donate-btn">☕ Donate</a>
-        
-        <!-- Кнопка чата с картинкой из фото (SVG) -->
-        <button id="chat-toggle-btn" class="chat-toggle-btn">
-            <svg viewBox="0 0 512 512"><path d="M448 0H64C28.7 0 0 28.7 0 64v288c0 35.3 28.7 64 64 64h96v84c0 9.8 11.2 15.5 19.1 9.7L304 416h144c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64zM176 240c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm112 0c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm112 0c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24z" opacity="0.9"/><path d="M416 160H224c-17.7 0-32 14.3-32 32v160c0 17.7 14.3 32 32 32h160l68.7 51.5c7.9 5.9 19.3.2 19.3-9.6V384c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-128 96c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zm64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zm64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z" opacity="0.6"/></svg>
-        </button>
     </div>
 
-    <!-- Полностью изолированный чистый футер -->
     <footer>
-        &copy; 2026 Stanislav A.
+        <div>&copy; 2026 Stanislav A.</div>
+        <div class="footer-link" id="privacy-open-btn">Privacy Policy</div>
     </footer>
 
     <script type="module">
@@ -303,7 +374,7 @@
         let serverLevelData = null;
         let myUserRef = null;
 
-        // Логика ЧАТА (локальные переменные)
+        // Переменные чата
         let myUserId = localStorage.getItem('chat_uid') || 'u_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('chat_uid', myUserId);
         let myNickname = localStorage.getItem('chat_nick') || 'Guest_' + Math.floor(1000 + Math.random() * 9000);
@@ -311,6 +382,7 @@
 
         let lastMessageTime = 0;
         let activeTargetMsgId = null;
+        let isChatSendingLocked = false; // Защита кнопки send от спам-кликов
 
         onValue(likesRef, (snap) => { 
             document.getElementById('likes-count').innerText = snap.val() || 0; 
@@ -597,7 +669,7 @@
             window.updateMyLevelStatus(-1);
         }
 
-        // --- ИНТЕГРАЦИЯ СЕКЬЮРНОГО ЧАТА НА КЛИЕНТЕ ---
+        // --- ЛОГИКА ЧАТА, ТАЙМЕРА И МОДАЛОК ---
         const openChatBtn = document.getElementById('chat-toggle-btn');
         const chatModal = document.getElementById('chat-modal');
         const closeChatBtn = document.getElementById('chat-close-btn');
@@ -606,18 +678,25 @@
         const chatMessagesContainer = document.getElementById('chat-messages-container');
         const nickInput = document.getElementById('chat-nick-input');
         const nickSaveBtn = document.getElementById('chat-nick-save');
+        const timerEl = document.getElementById('chat-timer-el');
 
-        // Модалки вместо alert
         const editModal = document.getElementById('chat-edit-modal');
         const deleteModal = document.getElementById('chat-delete-modal');
         const reportModal = document.getElementById('chat-report-modal');
+        const rulesModal = document.getElementById('rules-modal');
+        const privacyModal = document.getElementById('privacy-modal');
 
         openChatBtn.addEventListener('click', () => chatModal.classList.add('active'));
         closeChatBtn.addEventListener('click', () => chatModal.classList.remove('active'));
 
-        // Валидация никнейма и спецсимволов/юникода/свастик на клиенте
+        // Управление информационными модалками
+        document.getElementById('chat-rules-open-btn').onclick = () => rulesModal.classList.add('active');
+        document.getElementById('rules-close-btn').onclick = () => rulesModal.classList.remove('active');
+        document.getElementById('privacy-open-btn').onclick = () => privacyModal.classList.add('active');
+        document.getElementById('privacy-close-btn').onclick = () => privacyModal.classList.remove('active');
+
         function validateText(text) {
-            if (/[\u534d\u5350\u252c\u2534\u2550\u2551\u2554\u2557\u255a\u255d]/g.test(text)) return false; // Свастики и псевдографика Юникода
+            if (/[\u534d\u5350\u252c\u2534\u2550\u2551\u2554\u2557\u255a\u255d]/g.test(text)) return false; 
             const allowedRegex = /^[a-zA-Z0-9а-яА-ЯёЁ\s!?.,\-\(\):;]+$/;
             return allowedRegex.test(text);
         }
@@ -634,10 +713,32 @@
             }
         });
 
-        // Отправка сообщения
+        // Функция запуска визуального обратного отсчета для защиты от спама
+        function startChatCooldown() {
+            isChatSendingLocked = true;
+            chatSendBtn.disabled = true;
+            timerEl.style.display = 'flex';
+            
+            let timeLeft = 10;
+            timerEl.innerText = `${timeLeft}s`;
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = `${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    timerEl.style.display = 'none';
+                    chatSendBtn.disabled = false;
+                    isChatSendingLocked = false;
+                }
+            }, 1000);
+        }
+
         async function postChatMessage() {
+            if (isChatSendingLocked) return; // Защита от спама кликами по кнопке Send
+
             const now = Date.now();
-            if (now - lastMessageTime < 10000) { // Ограничение в 10 секунд
+            if (now - lastMessageTime < 10000) {
                 chatMsgInput.classList.add('shake');
                 setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
                 return;
@@ -650,7 +751,8 @@
                 return;
             }
 
-            // Отправляем на сервер для строгой интернациональной модерации
+            isChatSendingLocked = true; 
+
             try {
                 const res = await fetch(`${API_URL}/validateChatMessage`, {
                     method: 'POST',
@@ -661,10 +763,10 @@
                 if (!data.valid) {
                     chatMsgInput.classList.add('shake');
                     setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
+                    isChatSendingLocked = false;
                     return;
                 }
 
-                // Если сервер одобрил — пушим в Firebase Realtime DB
                 const newMsgRef = push(chatRef);
                 await set(newMsgRef, {
                     id: newMsgRef.key,
@@ -676,31 +778,30 @@
                 });
                 chatMsgInput.value = '';
                 lastMessageTime = now;
+                
+                // Активируем кулдаун
+                startChatCooldown();
             } catch (e) {
                 chatMsgInput.classList.add('shake');
                 setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
+                isChatSendingLocked = false;
             }
         }
 
         chatSendBtn.addEventListener('click', postChatMessage);
         chatMsgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') postChatMessage(); });
 
-        // Рендеринг чата в реальном времени
         onValue(chatRef, (snapshot) => {
             chatMessagesContainer.innerHTML = '';
             const data = snapshot.val();
             if (!data) return;
             
             const sortedMessages = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
-            
-            // Ограничим видимость последними 50 сообщениями
             const displayMsgs = sortedMessages.slice(-50);
 
             displayMsgs.forEach(msg => {
                 const block = document.createElement('div');
                 block.className = 'chat-msg-block';
-                
-                // Формат: Сверху ник и уровень потом двоеточие и на следующей строке сообщение
                 block.innerHTML = `
                     <div class="chat-msg-meta"><strong>${msg.nickname}</strong> [LVL ${msg.level}]:</div>
                     <div class="chat-msg-text">${msg.text}</div>
@@ -710,13 +811,11 @@
                 actionsContainer.className = 'chat-msg-actions';
 
                 if (msg.uid === myUserId) {
-                    // Изменить
                     const editLink = document.createElement('span');
                     editLink.className = 'chat-action-link';
                     editLink.innerText = 'Edit';
                     editLink.onclick = () => openEditDialog(msg.id, msg.text);
                     
-                    // Удалить
                     const deleteLink = document.createElement('span');
                     deleteLink.className = 'chat-action-link';
                     deleteLink.innerText = 'Delete';
@@ -725,7 +824,6 @@
                     actionsContainer.appendChild(editLink);
                     actionsContainer.appendChild(deleteLink);
                 } else {
-                    // Жалоба
                     const reportLink = document.createElement('span');
                     reportLink.className = 'chat-action-link report-link';
                     reportLink.innerText = 'Report';
@@ -739,7 +837,6 @@
             chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
         });
 
-        // Кастомные диалоговые окна действий
         function openEditDialog(id, currentText) {
             activeTargetMsgId = id;
             document.getElementById('chat-edit-input').value = currentText;
@@ -787,20 +884,30 @@
             reportModal.classList.add('active');
         }
         document.getElementById('chat-report-cancel').onclick = () => reportModal.classList.remove('active');
+        
+        // Переделано на Formspree строго по заданию
         document.getElementById('chat-report-confirm').onclick = async () => {
             if(!reportData) return;
-            // Бесплатная отправка через Formspree / EmailJS или публичный REST API без участия вашего сервера
+            const confirmBtn = document.getElementById('chat-report-confirm');
+            confirmBtn.disabled = true;
             try {
-                await fetch('https://formspree.io/f/mnnyeajw', { // Резервный эндпоинт отправки на fatago78@gmail.com
+                // Прямая защищенная отправка на Formspree на ваш ящик fatago78@gmail.com через их шлюз
+                await fetch('https://formspree.io/f/mnnyeajw', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
-                        email: "fatago78@gmail.com",
-                        message: `REPORT INCIDENT:\nMsg ID: ${reportData.id}\nUser: ${reportData.user}\nContent: ${reportData.text}`
+                        _replyto: "fatago78@gmail.com",
+                        subject: "AENIGMA CHAT REPORT",
+                        message: `INCIDENT LOG:\nMessage ID: ${reportData.id}\nOffender: ${reportData.user}\nContent: ${reportData.text}\nPlatform Link: https://aenigma-mark-2-3.onrender.com/`
                     })
                 });
-            } catch(e) {}
-            reportModal.classList.remove('active');
+            } catch(e) {
+                console.error("Report transmission failed", e);
+            } finally {
+                confirmBtn.disabled = false;
+                reportModal.classList.remove('active');
+                reportData = null;
+            }
         };
 
         document.getElementById('sub-btn').addEventListener('click', submitAnswer);
