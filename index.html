@@ -100,17 +100,21 @@
             line-height: 1.5;
             text-align: left;
             width: 100%;
+            margin-bottom: 6px;
         }
         .my-msg {
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
             border-radius: 2px;
-            padding: 1px 3px;
-            position: relative;
+            padding: 2px 4px;
+            display: block;
         }
         .my-msg:hover {
-            background: rgba(188, 152, 85, 0.12);
-            color: #fff;
+            background: rgba(188, 152, 85, 0.08);
+        }
+        .other-msg {
+            display: block;
+            padding: 2px 4px;
         }
 
         /* Кастомное контекстное меню терминала */
@@ -141,6 +145,17 @@
         .context-menu-item.danger:hover {
             background: var(--error);
             color: #fff;
+        }
+
+        #chat-change-nick-btn {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 6px;
+            transition: color 0.2s;
+        }
+        #chat-change-nick-btn:hover {
+            color: var(--accent);
         }
 
         @media (max-width: 600px) {
@@ -221,12 +236,15 @@
     <!-- Модальное окно чата -->
     <div id="chat-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 550px; width: 95%; border-color: var(--accent); box-shadow: 0 0 30px rgba(188, 152, 85, 0.15); padding: 30px 25px;">
-            <h2 style="color: var(--accent); font-size: 1.1rem; margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between; letter-spacing: 1px;">
-                <span id="chat-title-mode">// COMM_LINK_ESTABLISHED</span>
-                <span id="close-chat-btn" style="cursor: pointer; color: var(--text-muted); font-size: 1rem;">[X]</span>
+            <h2 style="color: var(--accent); font-size: 0.9rem; margin-bottom: 20px; text-align: left; display: flex; justify-content: space-between; letter-spacing: 1px; align-items: center;">
+                <span id="chat-title-mode" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%;">// LINK: <span id="chat-my-nick-display" style="color:#fff;">...</span></span>
+                <span style="display: flex; gap: 10px; align-items: center; flex-shrink: 0;">
+                    <span id="chat-change-nick-btn">[CHANGE]</span>
+                    <span id="close-chat-btn" style="cursor: pointer; color: var(--text-muted); font-size: 1rem;">[X]</span>
+                </span>
             </h2>
             
-            <div id="chat-messages" style="height: 280px; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 15px; font-size: 0.85rem; color: #a1a1aa; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px;">
+            <div id="chat-messages" style="height: 280px; overflow-y: auto; background: #000; border: 1px solid var(--border); padding: 15px; font-size: 0.85rem; color: #a1a1aa; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
                 <!-- Логи -->
             </div>
             
@@ -282,13 +300,15 @@
         let serverLevelData = null;
         let myUserRef = null;
 
-        if(!sessionStorage.getItem('aenigma_nick')) {
-            sessionStorage.setItem('aenigma_nick', `OPERATOR_${Math.floor(100 + Math.random() * 900)}`);
+        // Сохраняем ник в localStorage, чтобы не сбрасывался после обновления страницы
+        if(!localStorage.getItem('aenigma_nick')) {
+            localStorage.setItem('aenigma_nick', `OPERATOR_${Math.floor(100 + Math.random() * 900)}`);
         }
-        const playerNickname = sessionStorage.getItem('aenigma_nick');
+        let playerNickname = localStorage.getItem('aenigma_nick');
 
         // Чат и контекстное меню
         let editMessageKey = null; 
+        let isNicknameChangingMode = false;
         let selectedMessageKey = null;
         let selectedMessageText = "";
         let longPressTimer = null;
@@ -300,7 +320,12 @@
         const chatInputEl = document.getElementById('chat-input');
         const chatSendBtnEl = document.getElementById('chat-send-btn');
         const chatTitleMode = document.getElementById('chat-title-mode');
+        const chatMyNickDisplay = document.getElementById('chat-my-nick-display');
+        const chatChangeNickBtn = document.getElementById('chat-change-nick-btn');
         const ctxMenu = document.getElementById('chat-context-menu');
+
+        // Инициализируем отображение ника в заголовке
+        chatMyNickDisplay.textContent = playerNickname;
 
         onValue(likesRef, (snap) => { 
             const serverLikes = snap.val() || 0;
@@ -556,17 +581,50 @@
 
         function resetEditMode() {
             editMessageKey = null;
-            chatTitleMode.textContent = "// COMM_LINK_ESTABLISHED";
-            chatTitleMode.style.color = "var(--accent)";
+            isNicknameChangingMode = false;
+            chatTitleMode.innerHTML = `// LINK: <span id="chat-my-nick-display" style="color:#fff;">${playerNickname}</span>`;
+            chatChangeNickBtn.textContent = "[CHANGE]";
             chatInputEl.placeholder = "ENTER TRANSMISSION...";
             chatInputEl.value = "";
             chatSendBtnEl.textContent = "SEND";
         }
 
+        // Клик по кнопке [CHANGE] переводит инпут в режим смены ника
+        chatChangeNickBtn.addEventListener('click', () => {
+            if (isNicknameChangingMode) {
+                resetEditMode();
+            } else {
+                editMessageKey = null;
+                isNicknameChangingMode = true;
+                chatTitleMode.innerHTML = `// REGISTERING NEW IDENTITY...`;
+                chatChangeNickBtn.textContent = "[CANCEL]";
+                chatInputEl.value = playerNickname;
+                chatInputEl.placeholder = "NEW_NICK://";
+                chatSendBtnEl.textContent = "RENAME";
+                chatInputEl.focus();
+            }
+        });
+
         async function sendChatMessage() {
             const text = chatInputEl.value.trim();
             if (!text || text.length > 150) return;
 
+            // Если включен режим смены никнейма
+            if (isNicknameChangingMode) {
+                if (text.length < 3) {
+                    chatInputEl.classList.add('shake');
+                    setTimeout(() => chatInputEl.classList.remove('shake'), 400);
+                    return;
+                }
+                playerNickname = text;
+                localStorage.setItem('aenigma_nick', playerNickname);
+                resetEditMode();
+                // Принудительно перезапросим лог, чтобы обновились обработчики зажатия на наши сообщения
+                triggerChatRerender();
+                return;
+            }
+
+            // Если включен режим редактирования сообщения
             if (editMessageKey) {
                 try {
                     const specificMsgRef = ref(db, `chat_messages/${editMessageKey}`);
@@ -608,12 +666,13 @@
         document.addEventListener('click', closeContextMenu);
         chatMessagesEl.addEventListener('scroll', closeContextMenu);
 
-        // Обработчики зажатия элементов контекстного меню
+        // Обработчики контекстного меню терминала
         document.getElementById('ctx-edit-btn').addEventListener('click', () => {
             if (!selectedMessageKey) return;
+            isNicknameChangingMode = false;
             editMessageKey = selectedMessageKey;
-            chatTitleMode.textContent = "// EDIT_MODE_ACTIVE";
-            chatTitleMode.style.color = "#ef4444";
+            chatTitleMode.innerHTML = `<span style="color:#ef4444;">// EDIT_MODE_ACTIVE</span>`;
+            chatChangeNickBtn.textContent = "[CHANGE]";
             chatInputEl.value = selectedMessageText;
             chatInputEl.placeholder = "EDITING TRANSMISSION...";
             chatSendBtnEl.textContent = "SAVE";
@@ -631,7 +690,7 @@
             closeContextMenu();
         });
 
-        // Функция-хелпер для навешивания Long Press тач-событий
+        // Хелпер для Long Press событий
         window.bindLongPress = function(element, key, messageText) {
             const startPress = (e) => {
                 longPressTimer = setTimeout(() => {
@@ -643,12 +702,10 @@
                 if (longPressTimer) clearTimeout(longPressTimer);
             };
 
-            // Для мобилок (зажатие пальцем)
             element.addEventListener('touchstart', startPress, { passive: false });
             element.addEventListener('touchend', endPress);
             element.addEventListener('touchmove', endPress);
 
-            // Для ПК (обычный правый клик или левый клик как альтернатива)
             element.addEventListener('contextmenu', (e) => {
                 window.openCustomContextMenu(e, key, messageText);
             });
@@ -657,20 +714,25 @@
             element.addEventListener('mouseleave', endPress);
         };
 
-        const recentChatsQuery = query(chatRef, limitToLast(40));
-        onValue(recentChatsQuery, (snap) => {
-            chatMessagesEl.innerHTML = ''; const data = snap.val();
+        let lastSnapshotData = null;
+        function triggerChatRerender() {
+            if (lastSnapshotData) renderChatLogs(lastSnapshotData);
+        }
+
+        function renderChatLogs(data) {
+            chatMessagesEl.innerHTML = '';
             if (data) {
                 Object.entries(data).forEach(([key, msg]) => {
                     const msgEl = document.createElement('div');
                     msgEl.className = "chat-msg-row";
                     
                     const isMyMessage = (msg.user === playerNickname);
-                    const clickableClass = isMyMessage ? "my-msg" : "";
+                    const clickableClass = isMyMessage ? "my-msg" : "other-msg";
 
                     msgEl.innerHTML = `
                         <span class="${clickableClass}" data-key="${key}">
-                            <span style="color: var(--accent); font-weight: bold;">[LVL ${msg.level}] ${msg.user}:</span> <span style="color: #fff;">${escapeHtml(msg.message)}</span>
+                            <div style="color: var(--accent); font-weight: bold; margin-bottom: 2px;">[LVL ${msg.level}] ${msg.user}:</div>
+                            <div style="color: #fff; padding-left: 2px;">${escapeHtml(msg.message)}</div>
                         </span>
                     `;
 
@@ -685,6 +747,12 @@
             } else {
                 chatMessagesEl.innerHTML = `<div style="color: var(--text-muted);">NO ACTIVE TRANSMISSIONS...</div>`;
             }
+        }
+
+        const recentChatsQuery = query(chatRef, limitToLast(40));
+        onValue(recentChatsQuery, (snap) => {
+            lastSnapshotData = snap.val();
+            renderChatLogs(lastSnapshotData);
         });
 
         function escapeHtml(text) {
