@@ -76,6 +76,25 @@
         footer { margin-top: 40px; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
         .like-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 10px 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s; }
         .like-btn:hover { border-color: var(--accent); color: var(--accent); }
+        
+        .donate-btn {
+            background: none;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        .donate-btn:hover {
+            background: var(--accent);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(188, 152, 85, 0.4);
+        }
+
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
     </style>
@@ -139,6 +158,7 @@
         <div class="stats">ON THIS LAYER: <strong id="layer-online-count">0</strong></div>
         <div class="stats">COMPLETED U24: <strong id="completed-24-count">0</strong></div>
         <button id="like-btn" class="like-btn">❤ SYSTEM_LIKES: <span id="likes-count">0</span></button>
+        <a href="https://messenger.online.sberbank.ru/sl/kzEsbRgBZb6cf7Upy" target="_blank" class="donate-btn">☕ SUPPORT_SYSTEM</a>
     </footer>
 
     <script type="module">
@@ -358,7 +378,6 @@
             
             window.updateMyLevelStatus(99); 
             
-            // ИЗМЕНЕНО: Обновляем счетчик напрямую в Firebase моментально при входе на экран победы
             try {
                 await runTransaction(completed24Ref, (currentValue) => {
                     return (currentValue || 0) + 1;
