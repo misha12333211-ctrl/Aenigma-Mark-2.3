@@ -358,9 +358,14 @@
             
             window.updateMyLevelStatus(99); 
             
+            // ИЗМЕНЕНО: Обновляем счетчик напрямую в Firebase моментально при входе на экран победы
             try {
-                await fetch(`${API_URL}/addCompleted24`, { method: 'POST' });
-            } catch(e) { console.error("Failed to log victory to server", e); }
+                await runTransaction(completed24Ref, (currentValue) => {
+                    return (currentValue || 0) + 1;
+                });
+            } catch(e) { 
+                console.error("Failed to log victory directly to Firebase", e); 
+            }
         }
 
         function setupClicker() {
