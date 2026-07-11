@@ -137,7 +137,7 @@
     <footer>
         <div class="stats">TOTAL ONLINE: <strong id="online-count">0</strong></div>
         <div class="stats">ON THIS LAYER: <strong id="layer-online-count">0</strong></div>
-        <div class="stats">COMPLETED U24: <strong id="completed-24-count">0</strong></div>
+        <div class="stats">COMPLETED L24: <strong id="completed-24-count">0</strong></div>
         <button id="like-btn" class="like-btn">❤ SYSTEM_LIKES: <span id="likes-count">0</span></button>
     </footer>
 
@@ -285,6 +285,8 @@
                 if (currentLevelIndex !== 23) {
                     wrongAttempts = 0;
                     document.getElementById('attempt-counter').textContent = "0";
+                } else {
+                    document.getElementById('attempt-counter').textContent = wrongAttempts;
                 }
                 document.getElementById('hint-box').classList.remove('visible');
 
@@ -310,8 +312,7 @@
 
         async function submitAnswer() {
             const inputField = document.getElementById('user-answer');
-            if (inputField.style.display === 'none') return;
-            if (inputField.value.trim() === "") return;
+            if (!inputField || inputField.value.trim() === "") return;
             
             if (currentLevelIndex === 23) {
                 await sendAnswerToServer(inputField.value, { currentAttempts: wrongAttempts });
@@ -328,7 +329,15 @@
                     body: JSON.stringify({ index: currentLevelIndex, answer: answerString, rawData: rawData })
                 });
                 const result = await response.json();
-                if (result.success) triggerSuccess(); else triggerFail();
+                if (result.success) {
+                    if (currentLevelIndex === 23) {
+                        await showVictoryScreen();
+                    } else {
+                        triggerSuccess();
+                    }
+                } else {
+                    triggerFail();
+                }
             } catch (err) { console.error(err); }
         }
 
