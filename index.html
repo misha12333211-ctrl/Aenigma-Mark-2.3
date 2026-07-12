@@ -118,7 +118,7 @@
 
         .game-info-container { width: 100%; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
         
-        /* Фиксированная кнопка лайка в правом нижнем углу */
+        /* Фиксированная кнопка лайка (тусклый минималистичный вид) */
         .floating-like-btn {
             position: fixed;
             bottom: 25px;
@@ -127,8 +127,8 @@
             height: 55px;
             border-radius: 50%;
             background: var(--card-bg);
-            border: 1px solid var(--accent);
-            color: var(--accent);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -144,24 +144,30 @@
             margin-top: 2px;
             font-weight: bold;
             letter-spacing: 0.5px;
+            color: var(--text-muted);
+            transition: color 0.3s;
         }
         .floating-like-btn:hover {
-            background: rgba(188, 152, 85, 0.1);
-            box-shadow: 0 0 20px rgba(188, 152, 85, 0.4);
-            transform: scale(1.05);
+            border-color: var(--text-muted);
+            color: var(--text-main);
+            background: rgba(24, 24, 27, 0.4);
+        }
+        .floating-like-btn:hover span {
+            color: var(--text-main);
         }
         
-        /* Состояние кнопки ПОСЛЕ того, как лайк был поставлен */
+        /* Ненавязчивая подсветка белым цветом ПОСЛЕ клика */
         .floating-like-btn.liked {
-            background: var(--accent) !important;
-            color: var(--bg-color) !important;
-            box-shadow: 0 0 25px rgba(188, 152, 85, 0.6) !important;
+            border-color: var(--text-main) !important;
+            color: #fff !important;
+            background: var(--card-bg) !important;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15) !important;
         }
         .floating-like-btn.liked span {
-            color: var(--bg-color) !important;
+            color: #fff !important;
         }
 
-        /* Текстовый футер с донатом */
+        /* Текстовый футер и аккуратная уменьшенная кнопка доната */
         footer { 
             width: 100%; max-width: 600px; border-top: 1px solid var(--border); margin-top: auto; padding-top: 25px; padding-bottom: 25px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
             display: flex; flex-direction: column; align-items: center; gap: 20px; flex-shrink: 0;
@@ -178,18 +184,18 @@
             display: inline-flex; 
             align-items: center; 
             justify-content: center; 
-            gap: 8px;
-            font-size: 0.85rem; 
+            gap: 6px;
+            font-size: 0.75rem; 
             font-weight: bold;
-            padding: 12px 0;
-            width: 160px; 
+            padding: 8px 0;
+            width: 130px; 
             letter-spacing: 1px;
             transition: all 0.3s; 
             text-decoration: none;
             border-radius: 2px;
         }
-        .donate-btn-style { border: 1px solid var(--donate-color); color: var(--donate-color); }
-        .donate-btn-style:hover { background: rgba(34, 197, 94, 0.1); box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+        .donate-btn-style { border: 1px solid var(--border); color: var(--text-muted); }
+        .donate-btn-style:hover { border-color: var(--donate-color); color: var(--donate-color); background: rgba(34, 197, 94, 0.05); box-shadow: 0 0 12px rgba(34, 197, 94, 0.2); }
 
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
@@ -356,7 +362,6 @@
             try {
                 await runTransaction(likesRef, (currentValue) => (currentValue || 0) + 1);
                 localStorage.setItem('aenigma_liked', 'true');
-                // Добавляем класс подсветки при клике
                 likeBtnEl.classList.add('liked');
             } catch (err) { 
                 likeBtnEl.classList.add('shake');
@@ -366,7 +371,6 @@
             }
         });
 
-        // Проверяем статус при загрузке страницы, чтобы кнопка оставалась золотой
         if (localStorage.getItem('aenigma_liked')) {
             document.getElementById('like-btn').classList.add('liked');
         }
