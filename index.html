@@ -29,18 +29,8 @@
             display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 40px 20px;
             overflow-x: hidden; overflow-y: auto; position: relative;
         }
-        
-        .chat-top-right-container {
-            position: absolute; top: 25px; right: 20px; z-index: 100;
-        }
-        .chat-toggle-btn {
-            background: none; border: 1px solid var(--accent); color: var(--accent); width: 45px; height: 45px; border-radius: 50%;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
-        }
-        .chat-toggle-btn:hover { background: var(--accent); color: var(--bg-color); }
-        .chat-toggle-btn svg { width: 24px; height: 24px; fill: currentColor; }
 
-        header { width: 100%; max-width: 700px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; padding-right: 55px; flex-shrink: 0; }
+        header { width: 100%; max-width: 700px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; flex-shrink: 0; }
         .stats { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px; }
         .stats strong { color: var(--accent); }
         
@@ -53,13 +43,12 @@
         .screen.active { display: block; }
         h1 { font-size: 1.6rem; letter-spacing: 5px; margin-bottom: 30px; color: #fff; position: relative; z-index: 20; }
         p { color: var(--text-main); line-height: 1.8; margin-bottom: 35px; font-size: 0.95rem; text-align: justify; position: relative; z-index: 20; }
-        input[type="text"], textarea {
+        input[type="text"] {
             width: 100%; background: var(--bg-color); border: 1px solid var(--border); padding: 15px; color: #fff;
             margin-bottom: 25px; outline: none; text-align: center; letter-spacing: 2px; font-size: 1.1rem;
             transition: all 0.3s ease; -webkit-user-select: text; user-select: text; position: relative; z-index: 20;
         }
-        input[type="text"]:focus, textarea:focus { border-color: var(--accent); background: #09090b; }
-        textarea { text-align: left; resize: none; font-size: 0.9rem; letter-spacing: 0px; }
+        input[type="text"]:focus { border-color: var(--accent); background: #09090b; }
         
         .btn-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; position: relative; z-index: 20; }
         .btn {
@@ -103,8 +92,6 @@
             width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; padding-bottom: 35px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
             display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; flex-shrink: 0;
         }
-        .footer-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
-        .footer-link:hover { color: var(--accent); }
         
         .round-like-btn { width: 45px; height: 45px; border-radius: 50%; background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.65rem; transition: all 0.3s; }
         .round-like-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -117,51 +104,6 @@
         }
         .donate-btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px rgba(188, 152, 85, 0.4); }
 
-        .chat-modal-card { background: var(--card-bg); border: 1px solid var(--accent); width: 95%; max-width: 500px; height: 80vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(188, 152, 85, 0.15); }
-        .chat-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .chat-header h3 { font-size: 1rem; color: var(--accent); letter-spacing: 2px; }
-        .chat-header-actions { display: flex; align-items: center; gap: 15px; }
-        .chat-rules-btn { background: none; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 4px 8px; font-size: 0.7rem; cursor: pointer; }
-        .chat-rules-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .chat-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s; line-height: 1; }
-        .chat-close:hover { color: var(--error); }
-        
-        .chat-nickname-section { padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; }
-        .chat-nickname-section input { margin-bottom: 0 !important; padding: 8px !important; font-size: 0.9rem !important; text-align: left !important; }
-        .chat-nickname-section .btn { padding: 8px 15px !important; font-size: 0.8rem !important; letter-spacing: 1px !important; }
-        
-        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; text-align: left; -webkit-user-select: text; user-select: text; }
-        .chat-msg-block { border-left: 2px solid var(--border); padding-left: 10px; position: relative; transition: border-color 0.2s; -webkit-user-select: text; user-select: text; }
-        .chat-msg-block:hover { border-color: var(--accent); }
-        .chat-msg-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; -webkit-user-select: text; user-select: text; }
-        .chat-msg-meta strong { color: var(--accent); }
-        .chat-msg-text { font-size: 0.9rem; color: var(--text-main); white-space: pre-wrap; word-break: break-word; line-height: 1.4; -webkit-user-select: text; user-select: text; }
-        
-        .chat-msg-actions { display: flex; gap: 10px; margin-top: 5px; }
-        .chat-action-link { font-size: 0.7rem; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
-        .chat-action-link:hover { color: #fff; }
-        .chat-action-link.report-link:hover { color: #f59e0b; }
-        .chat-action-link.admin-link { color: #ef4444; }
-        .chat-action-link.admin-link:hover { color: #f87171; }
-        
-        .chat-input-section { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; position: relative; }
-        .chat-input-section input { margin-bottom: 0 !important; padding: 12px !important; font-size: 0.95rem !important; text-align: left !important; }
-        .chat-input-section .btn { padding: 12px 20px !important; font-size: 0.85rem !important; letter-spacing: 1px !important; }
-        
-        .chat-timer-overlay {
-            position: absolute; right: 15px; top: 15px; bottom: 15px; background: rgba(12, 12, 14, 0.9);
-            border: 1px solid var(--text-muted); color: var(--text-muted); display: none; align-items: center;
-            justify-content: center; font-size: 0.85rem; font-weight: bold; padding: 0 20px; pointer-events: none;
-        }
-
-        .chat-dialog-card { max-width: 400px; border-color: var(--border); }
-        .chat-dialog-card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 15px; letter-spacing: 1px; }
-
-        .text-modal-card { max-width: 550px; width: 90%; max-height: 75vh; overflow-y: auto; text-align: left; border: 1px solid var(--accent); background: var(--card-bg); padding: 30px; }
-        .text-modal-card h2 { color: var(--accent); font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .text-modal-card p, .text-modal-card li { font-size: 0.85rem; color: var(--text-main); line-height: 1.6; margin-bottom: 12px; text-align: justify; }
-        .text-modal-card ul { margin-left: 20px; margin-bottom: 15px; }
-
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
 
@@ -170,17 +112,10 @@
             main { margin: 20px 0; padding: 40px 20px; }
             .game-info-container { padding-top: 15px; }
             footer { margin-top: 10px; padding-top: 15px; padding-bottom: 25px; }
-            .chat-top-right-container { top: 15px; right: 15px; }
         }
     </style>
 </head>
 <body>
-
-    <div class="chat-top-right-container">
-        <button id="chat-toggle-btn" class="chat-toggle-btn">
-            <svg viewBox="0 0 512 512"><path d="M448 0H64C28.7 0 0 28.7 0 64v288c0 35.3 28.7 64 64 64h96v84c0 9.8 11.2 15.5 19.1 9.7L304 416h144c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64zM176 240c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm112 0c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm112 0c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24z" opacity="0.9"/><path d="M416 160H224c-17.7 0-32 14.3-32 32v160c0 17.7 14.3 32 32 32h160l68.7 51.5c7.9 5.9 19.3.2 19.3-9.6V384c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-128 96c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zm64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zm64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z" opacity="0.6"/></svg>
-        </button>
-    </div>
 
     <header>
         <div class="stats">CORE:// AENIGMA_MARK_2.3</div>
@@ -234,101 +169,6 @@
         </div>
     </div>
 
-    <div id="chat-warning-modal" class="modal-overlay">
-        <div class="modal-card" style="border-color: var(--error);">
-            <h2 style="color: #ef4444;">⚠️ SYSTEM WARNING</h2>
-            <p id="chat-warning-message" style="margin-top: 15px; font-size: 0.95rem; line-height: 1.5; text-align: center;">Ваше сообщение нарушает правила чата.</p>
-            <button class="btn" onclick="document.getElementById('chat-warning-modal').classList.remove('active')" style="border-color: var(--error); color: var(--error);">I UNDERSTAND</button>
-        </div>
-    </div>
-
-    <div id="chat-modal" class="modal-overlay">
-        <div class="chat-modal-card">
-            <div class="chat-header">
-                <h3>MODULE://SECURE_CHAT</h3>
-                <div class="chat-header-actions">
-                    <button class="chat-rules-btn" id="chat-rules-open-btn">RULES</button>
-                    <button class="chat-close" id="chat-close-btn">&times;</button>
-                </div>
-            </div>
-            <div class="chat-nickname-section">
-                <input type="text" id="chat-nick-input" placeholder="Change nickname..." maxlength="16" autocomplete="off">
-                <button class="btn" id="chat-nick-save">SAVE</button>
-            </div>
-            <div class="chat-messages" id="chat-messages-container"></div>
-            <div class="chat-input-section">
-                <input type="text" id="chat-msg-input" placeholder="Type a message (Max 40 words)..." autocomplete="off">
-                <button class="btn" id="chat-send-btn">SEND</button>
-                <div class="chat-timer-overlay" id="chat-timer-el">10s</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="chat-edit-modal" class="modal-overlay">
-        <div class="modal-card chat-dialog-card">
-            <h3>EDIT MESSAGE</h3>
-            <input type="text" id="chat-edit-input" autocomplete="off">
-            <div class="btn-container">
-                <button class="btn" id="chat-edit-confirm">SAVE</button>
-                <button class="btn secondary" id="chat-edit-cancel">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="chat-delete-modal" class="modal-overlay">
-        <div class="modal-card chat-dialog-card" style="border-color: var(--error);">
-            <h3 style="color: #ef4444;">DELETE MESSAGE?</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">This action is irreversible.</p>
-            <div class="btn-container">
-                <button class="btn" id="chat-delete-confirm" style="border-color: var(--error); color: var(--error);">DELETE</button>
-                <button class="btn secondary" id="chat-delete-cancel">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="chat-report-modal" class="modal-overlay">
-        <div class="modal-card chat-dialog-card" style="border-color: #f59e0b; max-width: 480px;">
-            <h3 style="color: #f59e0b;">SUBMIT REPORT</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Describe the problem or violation below:</p>
-            <textarea id="chat-report-text" placeholder="Type explanation here (max 200 chars)..." maxlength="200" rows="3"></textarea>
-            <div class="btn-container">
-                <button class="btn" id="chat-report-confirm" style="border-color: #f59e0b; color: #f59e0b;">SEND</button>
-                <button class="btn secondary" id="chat-report-cancel">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="rules-modal" class="modal-overlay">
-        <div class="text-modal-card">
-            <h2>AENIGMA CHAT PROTOCOL & RULES</h2>
-            <p><strong>Внимание оператора!</strong> Внутрисистемный шлюз общения находится под строгим контролем автоматических алгоритмов. Нарушение следующих правил приведет к перманентной блокировке сетевого ID:</p>
-            <ul>
-                <li><strong>1. Запрет политики и конфликтов:</strong> Строго табуированы любые обсуждения политических событий, упоминания войн, лидеров государств (президентов), названий стран и агрессивный национализм на любом языке мира.</li>
-                <li><strong>2. Запрет рекламы и спама:</strong> Запрещена отправка ссылок, кодов, приглашений, спам-рассылок и рекламы сторонних ресурсов.</li>
-                <li><strong>3. Личные данные:</strong> Запрещен ввод номеров телефонов, адресов, аккаунтов мессенджеров, email и иной конфиденциальной информации.</li>
-                <li><strong>4. Графический и Юникод спам:</strong> Запрещены любые символы кроме латиницы, кириллицы, цифр и знаков: ?, !, . и ,. Все символы Юникода (включая эмодзи) запрещены.</li>
-                <li><strong>5. Ограничение темпа:</strong> Отправка сообщений разрешена раз в 10 секунд. Длина сообщений: максимум 40 слов.</li>
-            </ul>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn" id="rules-close-btn">I UNDERSTAND</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="privacy-modal" class="modal-overlay">
-        <div class="text-modal-card">
-            <h2>PRIVACY POLICY // AENIGMA MARK 2.3</h2>
-            <p>Настоящая Политика конфиденциальности регулирует порядок обработки и защиты данных пользователей веб-ресурса https://aenigma-mark-2-3.onrender.com/.</p>
-            <p><strong>1. Сбор информации:</strong> Мы не собираем личную информацию пользователей. Для работы интерактивного чата и отображения онлайна используются случайно генерируемые сервером идентификаторы сессии (UID) и постоянные ID чата.</p>
-            <p><strong>2. Использование данных чата:</strong> Все сообщения, отправляемые в чат, проходят мгновенную автоматическую фильтрацию на сервере. Опубликованные сообщения содержат только выбранный вами псевдоним (никнейм) и текущий игровой уровень.</p>
-            <p><strong>3. Жалобы и безопасность:</strong> При отправке жалобы на нарушения (Report), данные передаются на защищенный почтовый ящик модерации fatago78@gmail.com через центральный API сервера.</p>
-            <p><strong>4. Сторонние сервисы:</strong> Сайт использует базу данных Firebase Realtime Database исключительно для синхронизации игровых счетчиков и сообщений чата в реальном времени.</p>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn" id="privacy-close-btn">ACCEPT & CLOSE</button>
-            </div>
-        </div>
-    </div>
-
     <div class="game-info-container">
         <div class="stats">TOTAL ONLINE: <strong id="online-count">0</strong></div>
         <div class="stats">ON THIS LAYER: <strong id="layer-online-count">0</strong></div>
@@ -340,12 +180,11 @@
 
     <footer>
         <div>&copy; 2026 Stanislav A.</div>
-        <div class="footer-link" id="privacy-open-btn">Privacy Policy</div>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-        import { getDatabase, ref, onValue, push, onDisconnect, set, runTransaction, child, remove, update } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+        import { getDatabase, ref, onValue, push, onDisconnect, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkFTLYk0Jd02thV6DLEzB8hJF-B9IRx68",
@@ -363,7 +202,6 @@
         const connectedRef = ref(db, ".info/connected");
         const onlineUsersRef = ref(db, "online_users");
         const completed24Ref = ref(db, 'counters/completed24');
-        const chatRef = ref(db, 'secure_chat');
 
         let currentLevelIndex = 0;
         let wrongAttempts = 0;
@@ -373,23 +211,6 @@
         let kineticAnimationFrameId = null;
         let serverLevelData = null;
         let myUserRef = null;
-
-        // Безопасный статус сессии. Флаг синхронизируется только ответом от сервера
-        let isCurrentUserAdmin = localStorage.getItem('is_admin') === 'true';
-
-        let myUserId = localStorage.getItem('chat_uid');
-        if (!myUserId) {
-            myUserId = 'id_' + Math.floor(100000 + Math.random() * 900000);
-            localStorage.setItem('chat_uid', myUserId);
-        }
-        
-        const getDefaultNickname = () => 'Guest_' + myUserId.split('_')[1];
-        let myNickname = localStorage.getItem('chat_nick') || getDefaultNickname();
-        document.getElementById('chat-nick-input').value = myNickname;
-
-        let lastMessageTime = 0;
-        let activeTargetMsgId = null;
-        let isChatSendingLocked = false;
 
         onValue(likesRef, (snap) => { 
             document.getElementById('likes-count').innerText = snap.val() || 0; 
@@ -675,413 +496,6 @@
             document.getElementById('start-screen').classList.add('active'); 
             window.updateMyLevelStatus(-1);
         }
-
-        const openChatBtn = document.getElementById('chat-toggle-btn');
-        const chatModal = document.getElementById('chat-modal');
-        const closeChatBtn = document.getElementById('chat-close-btn');
-        const chatMsgInput = document.getElementById('chat-msg-input');
-        const chatSendBtn = document.getElementById('chat-send-btn');
-        const chatMessagesContainer = document.getElementById('chat-messages-container');
-        const nickInput = document.getElementById('chat-nick-input');
-        const nickSaveBtn = document.getElementById('chat-nick-save');
-        const timerEl = document.getElementById('chat-timer-el');
-
-        const editModal = document.getElementById('chat-edit-modal');
-        const deleteModal = document.getElementById('chat-delete-modal');
-        const reportModal = document.getElementById('chat-report-modal');
-        const rulesModal = document.getElementById('rules-modal');
-        const privacyModal = document.getElementById('privacy-modal');
-        const chatWarningModal = document.getElementById('chat-warning-modal');
-
-        openChatBtn.addEventListener('click', () => chatModal.classList.add('active'));
-        closeChatBtn.addEventListener('click', () => chatModal.classList.remove('active'));
-
-        document.getElementById('chat-rules-open-btn').onclick = () => rulesModal.classList.add('active');
-        document.getElementById('rules-close-btn').onclick = () => rulesModal.classList.remove('active');
-        document.getElementById('privacy-open-btn').onclick = () => privacyModal.classList.add('active');
-        document.getElementById('privacy-close-btn').onclick = () => privacyModal.classList.remove('active');
-
-        function triggerWarningModal(reasonText) {
-            document.getElementById('chat-warning-message').innerText = reasonText;
-            chatWarningModal.classList.add('active');
-        }
-
-        function validateText(text) {
-            const trimmed = text.trim();
-            if (!trimmed) return { valid: false, reason: "Поле ввода не может быть пустым." };
-
-            const words = trimmed.split(/\s+/).filter(w => w.length > 0);
-            if (words.length > 40) {
-                return { valid: false, reason: "Превышен лимит слов! Разрешено не более 40 слов." };
-            }
-
-            const strictSymbolsRegex = /^[a-zA-Z0-9а-яА-ЯёЁ\s?!.,]+$/;
-            if (!strictSymbolsRegex.test(trimmed)) {
-                return { valid: false, reason: "Обнаружены запрещенные символы или эмодзи! Разрешены только буквы, цифры и знаки: ?, !, ., ," };
-            }
-
-            const blacklistedKeywords = [
-                /эрдоган/i, /erdogan/i, /путин/i, /putin/i, /зеленск/i, /zelensk/i, /байден/i, /biden/i, /трамп/i, /trump/i,
-                /россия/i, /russia/i, /украин/i, /ukrain/i, /сша/i, /usa/i, /турция/i, /turkey/i, /политика/i, /politic/i,
-                /война/i, /war/i, /хуй/i, /пизд/i, /ебл/i, /ебат/i, /сук/i, /блять/i, /blyat/i, /fuck/i, /bitch/i,
-                /http/i, /www\./i, /\.com/i, /\.ru/i, /\.net/i, /\.org/i, /\.io/i, /telegram/i, /viber/i, /whatsapp/i
-            ];
-
-            for (let regex of blacklistedKeywords) {
-                if (regex.test(trimmed)) {
-                    return { valid: false, reason: "Контент содержит запрещенную информацию (политику, мат, рекламу, ссылки или личные данные)." };
-                }
-            }
-
-            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-            const phoneRegex = /(\+?\d{1,4}?[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/;
-            if (emailRegex.test(trimmed) || phoneRegex.test(trimmed)) {
-                return { valid: false, reason: "Публикация личной информации, e-mail и номеров телефонов строго запрещена." };
-            }
-
-            return { valid: true };
-        }
-
-        // ЗАДАНИЕ 1: Модерация через ввод никнейма и серверную проверку
-        nickSaveBtn.addEventListener('click', async () => {
-            const val = nickInput.value.trim();
-            
-            if (!val) {
-                nickInput.classList.add('shake');
-                setTimeout(() => nickInput.classList.remove('shake'), 400);
-                myNickname = getDefaultNickname();
-                localStorage.setItem('chat_nick', myNickname);
-                nickInput.value = myNickname;
-                return;
-            }
-
-            // Попытка авторизации как модератор
-            try {
-                const res = await fetch(`${API_URL}/adminLogin`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: val })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    isCurrentUserAdmin = true;
-                    localStorage.setItem('is_admin', 'true');
-                    localStorage.setItem('admin_token', val);
-                    nickInput.style.borderColor = 'var(--success)';
-                    alert("РЕЖИМ МОДЕРАТОРА АКТИВИРОВАН.");
-                    nickInput.value = myNickname; // Возвращаем текущий ник в визуал
-                    return;
-                }
-            } catch(e) {}
-
-            // Стандартное сохранение обычного никнейма, если пароль не подошел
-            if (val.length < 3 || val.length > 16) {
-                nickInput.classList.add('shake');
-                setTimeout(() => nickInput.classList.remove('shake'), 400);
-                triggerWarningModal("Никнейм должен содержать от 3 до 16 валидных символов.");
-                return;
-            }
-
-            const check = validateText(val);
-            if (check.valid) {
-                myNickname = val;
-                localStorage.setItem('chat_nick', myNickname);
-                nickInput.style.borderColor = 'var(--border)';
-                alert("Никнейм изменен.");
-            } else {
-                nickInput.classList.add('shake');
-                setTimeout(() => nickInput.classList.remove('shake'), 400);
-                triggerWarningModal(check.reason);
-            }
-        });
-
-        function startChatCooldown() {
-            isChatSendingLocked = true;
-            chatSendBtn.disabled = true;
-            timerEl.style.display = 'flex';
-            
-            let timeLeft = 10;
-            timerEl.innerText = `${timeLeft}s`;
-
-            const interval = setInterval(() => {
-                timeLeft--;
-                timerEl.innerText = `${timeLeft}s`;
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    timerEl.style.display = 'none';
-                    chatSendBtn.disabled = false;
-                    isChatSendingLocked = false;
-                }
-            }, 1000);
-        }
-
-        async function postChatMessage() {
-            if (isChatSendingLocked) return;
-
-            const now = Date.now();
-            if (now - lastMessageTime < 10000) {
-                chatMsgInput.classList.add('shake');
-                setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
-                return;
-            }
-
-            const msgText = chatMsgInput.value.trim();
-            const check = validateText(msgText);
-            
-            // ЗАДАНИЕ 2: Показ окна предупреждения при локальной ошибке валидации
-            if (!check.valid) {
-                chatMsgInput.classList.add('shake');
-                setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
-                triggerWarningModal(check.reason);
-                return;
-            }
-
-            isChatSendingLocked = true; 
-
-            try {
-                const res = await fetch(`${API_URL}/validateChatMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msgText, uid: myUserId })
-                });
-                const data = await res.json();
-                
-                // ЗАДАНИЕ 2: Системное окно при серверной блокировке/бане
-                if (data.banned) {
-                    triggerWarningModal("Ваш системный ID заблокирован за нарушение протоколов.");
-                    isChatSendingLocked = false;
-                    return;
-                }
-                
-                if (!data.valid) {
-                    chatMsgInput.classList.add('shake');
-                    setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
-                    triggerWarningModal("Сообщение заблокировано фильтром контента безопасности.");
-                    isChatSendingLocked = false;
-                    return;
-                }
-
-                const newMsgRef = push(chatRef);
-                await set(newMsgRef, {
-                    id: newMsgRef.key,
-                    uid: myUserId,
-                    nickname: myNickname,
-                    level: (currentLevelIndex + 1),
-                    text: msgText,
-                    timestamp: now
-                });
-                chatMsgInput.value = '';
-                lastMessageTime = now;
-                startChatCooldown();
-            } catch (e) {
-                chatMsgInput.classList.add('shake');
-                setTimeout(() => chatMsgInput.classList.remove('shake'), 400);
-                isChatSendingLocked = false;
-            }
-        }
-
-        chatSendBtn.addEventListener('click', postChatMessage);
-        chatMsgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') postChatMessage(); });
-
-        onValue(chatRef, (snapshot) => {
-            chatMessagesContainer.innerHTML = '';
-            const data = snapshot.val();
-            if (!data) return;
-            
-            const sortedMessages = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
-            const displayMsgs = sortedMessages.slice(-50);
-
-            displayMsgs.forEach(msg => {
-                const block = document.createElement('div');
-                block.className = 'chat-msg-block';
-                block.innerHTML = `
-                    <div class="chat-msg-meta"><strong>${msg.nickname}</strong> [ID: ${msg.uid}] [LVL ${msg.level}]:</div>
-                    <div class="chat-msg-text">${msg.text}</div>
-                `;
-
-                const actionsContainer = document.createElement('div');
-                actionsContainer.className = 'chat-msg-actions';
-
-                if (msg.uid === myUserId) {
-                    const editLink = document.createElement('span');
-                    editLink.className = 'chat-action-link';
-                    editLink.innerText = 'Edit';
-                    editLink.onclick = () => openEditDialog(msg.id, msg.text);
-                    
-                    const deleteLink = document.createElement('span');
-                    deleteLink.className = 'chat-action-link';
-                    deleteLink.innerText = 'Delete';
-                    deleteLink.onclick = () => openDeleteDialog(msg.id);
-
-                    actionsContainer.appendChild(editLink);
-                    actionsContainer.appendChild(deleteLink);
-                } else {
-                    const reportLink = document.createElement('span');
-                    reportLink.className = 'chat-action-link report-link';
-                    reportLink.innerText = 'Report';
-                    reportLink.onclick = () => openReportDialog(msg.id, msg.uid, msg.nickname, msg.text);
-                    actionsContainer.appendChild(reportLink);
-                }
-
-                // Рендер админ-панели на основе динамического статуса
-                if (isCurrentUserAdmin) {
-                    const adminDeleteLink = document.createElement('span');
-                    adminDeleteLink.className = 'chat-action-link admin-link';
-                    adminDeleteLink.innerText = '[Удалить]';
-                    adminDeleteLink.onclick = () => { activeTargetMsgId = msg.id; adminDeleteMessage(); };
-
-                    const adminBanLink = document.createElement('span');
-                    adminBanLink.className = 'chat-action-link admin-link';
-                    adminBanLink.innerText = '[Бан по ID]';
-                    adminBanLink.onclick = () => adminBanUser(msg.uid);
-
-                    const adminUnbanLink = document.createElement('span');
-                    adminUnbanLink.className = 'chat-action-link admin-link';
-                    adminUnbanLink.style.color = '#10b981';
-                    adminUnbanLink.innerText = '[Разбан по ID]';
-                    adminUnbanLink.onclick = () => adminUnbanUser(msg.uid);
-
-                    actionsContainer.appendChild(adminDeleteLink);
-                    actionsContainer.appendChild(adminBanLink);
-                    actionsContainer.appendChild(adminUnbanLink);
-                }
-
-                block.appendChild(actionsContainer);
-                chatMessagesContainer.appendChild(block);
-            });
-            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-        });
-
-        async function adminDeleteMessage() {
-            if (!activeTargetMsgId) return;
-            try {
-                const token = localStorage.getItem('admin_token');
-                const res = await fetch(`${API_URL}/adminDeleteMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messageId: activeTargetMsgId, adminPassword: token })
-                });
-                const data = await res.json();
-                if(!data.success) alert("Ошибка удаления на сервере.");
-            } catch(e) { console.error(e); }
-        }
-
-        async function adminBanUser(targetUid) {
-            if (!confirm(`Заблокировать пользователя ${targetUid} навсегда?`)) return;
-            try {
-                const token = localStorage.getItem('admin_token');
-                await fetch(`${API_URL}/adminBanUser`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetUid, adminPassword: token })
-                });
-                alert(`Пользователь ${targetUid} успешно забанен.`);
-            } catch(e) { alert("Ошибка при блокировке."); }
-        }
-
-        async function adminUnbanUser(targetUid) {
-            if (!confirm(`Разблокировать пользователя ${targetUid}?`)) return;
-            try {
-                const token = localStorage.getItem('admin_token');
-                const res = await fetch(`${API_URL}/adminUnbanUser`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetUid, adminPassword: token })
-                });
-                const data = await res.json();
-                if(data.success) {
-                    alert(`Пользователь ${targetUid} успешно разблокирован.`);
-                } else {
-                    alert("Не удалось разблокировать.");
-                }
-            } catch(e) { alert("Ошибка шлюза при разблокировке."); }
-        }
-
-        function openEditDialog(id, currentText) {
-            activeTargetMsgId = id;
-            document.getElementById('chat-edit-input').value = currentText;
-            editModal.classList.add('active');
-        }
-        document.getElementById('chat-edit-cancel').onclick = () => editModal.classList.remove('active');
-        document.getElementById('chat-edit-confirm').onclick = async () => {
-            const input = document.getElementById('chat-edit-input');
-            const newText = input.value.trim();
-            const check = validateText(newText);
-            if (newText.length >= 1 && check.valid) {
-                try {
-                    const res = await fetch(`${API_URL}/validateChatMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: newText, uid: myUserId })
-                    });
-                    const data = await res.json();
-                    if (data.valid && !data.banned) {
-                        await update(child(chatRef, activeTargetMsgId), { text: newText });
-                        editModal.classList.remove('active');
-                    } else {
-                        input.classList.add('shake'); setTimeout(() => input.classList.remove('shake'), 400);
-                        if(data.banned) triggerWarningModal("Вы заблокированы.");
-                    }
-                } catch(e) {}
-            } else {
-                input.classList.add('shake'); setTimeout(() => input.classList.remove('shake'), 400);
-                triggerWarningModal(check.reason || "Текст сообщения невалиден.");
-            }
-        };
-
-        function openDeleteDialog(id) {
-            activeTargetMsgId = id;
-            deleteModal.classList.add('active');
-        }
-        document.getElementById('chat-delete-cancel').onclick = () => deleteModal.classList.remove('active');
-        document.getElementById('chat-delete-confirm').onclick = async () => {
-            try {
-                await remove(child(chatRef, activeTargetMsgId));
-                deleteModal.classList.remove('active');
-            } catch(e) {}
-        };
-
-        let reportData = null;
-        function openReportDialog(id, targetUid, user, text) {
-            reportData = { id, targetUid, user, text };
-            document.getElementById('chat-report-text').value = ''; 
-            reportModal.classList.add('active');
-        }
-        document.getElementById('chat-report-cancel').onclick = () => reportModal.classList.remove('active');
-        
-        // ЗАДАНИЕ 3: Исправленная отправка репорта через сервер
-        document.getElementById('chat-report-confirm').onclick = async () => {
-            if(!reportData) return;
-            const customComment = document.getElementById('chat-report-text').value.trim();
-            const confirmBtn = document.getElementById('chat-report-confirm');
-            confirmBtn.disabled = true;
-            try {
-                const res = await fetch(`${API_URL}/submitReport`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messageId: reportData.id,
-                        offenderId: reportData.targetUid,
-                        offenderName: reportData.user,
-                        text: reportData.text,
-                        comment: customComment || "No comment provided"
-                    })
-                });
-                const data = await res.json();
-                if(data.success) {
-                    alert("Жалоба успешно отправлена модераторам.");
-                } else {
-                    alert("Ошибка при обработке запроса сервером.");
-                }
-            } catch(e) {
-                console.error(e);
-                alert("Не удалось связаться с сервером.");
-            } finally {
-                confirmBtn.disabled = false;
-                reportModal.classList.remove('active');
-                reportData = null;
-            }
-        };
 
         document.getElementById('sub-btn').addEventListener('click', submitAnswer);
         document.getElementById('modal-continue-btn').addEventListener('click', nextLevel);
