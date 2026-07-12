@@ -88,7 +88,7 @@
         .hint-box.visible { display: block; }
         
         .modal-overlay {
-            display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 7, 0.9);
+            display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 7, 0.95);
             z-index: 1000; justify-content: center; align-items: center; opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; visibility: visible; }
@@ -96,20 +96,25 @@
         .modal-card h2 { color: #22c55e; font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 15px; }
         .modal-card p { margin-bottom: 25px; }
         
-        /* Специфический стиль для модалки доната */
-        .modal-card.donate-card { border-color: var(--donate-color); box-shadow: 0 0 30px rgba(34, 197, 94, 0.2); text-align: left; }
-        .modal-card.donate-card h2 { color: var(--donate-color); text-align: center; }
-        .wallet-box { background: var(--bg-color); border: 1px solid var(--border); padding: 12px; margin: 15px 0; font-size: 0.8rem; word-break: break-all; color: #fff; -webkit-user-select: text; user-select: text; }
-        .donate-notice { color: #f59e0b; font-size: 0.75rem; border-left: 2px solid #f59e0b; padding-left: 10px; margin-top: 15px; line-height: 1.4; }
+        /* Улучшенная читаемость англоязычной модалки доната */
+        .modal-card.donate-card { border-color: var(--donate-color); box-shadow: 0 0 40px rgba(34, 197, 94, 0.25); text-align: left; padding: 35px 30px; }
+        .modal-card.donate-card h2 { color: var(--donate-color); text-align: center; margin-bottom: 25px; }
+        .donate-method-block { margin-bottom: 25px; }
+        .wallet-box { 
+            background: #000; border: 1px dashed #3f3f46; padding: 14px; margin: 10px 0; 
+            font-size: 0.8rem; word-break: break-all; color: #fff; line-height: 1.5;
+            -webkit-user-select: text; user-select: text; letter-spacing: 0.5px;
+        }
+        .donate-notice { color: #f59e0b; font-size: 0.75rem; border-left: 2px solid #f59e0b; padding-left: 12px; margin-top: 20px; line-height: 1.5; }
 
         .game-info-container { width: 100%; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
         
+        /* Увеличен отступ футера для десктопа и сброс лишних паддингов снизу */
         footer { 
-            width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; padding-bottom: 35px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
+            width: 100%; max-width: 700px; border-top: 1px solid var(--border); margin-top: 60px; padding-top: 25px; padding-bottom: 25px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
             display: flex; flex-direction: column; align-items: center; gap: 20px; flex-shrink: 0;
         }
         
-        /* Идеально одинаковые кнопки */
         .footer-btn-container {
             display: flex; 
             align-items: center; 
@@ -127,41 +132,29 @@
             font-size: 0.85rem; 
             font-weight: bold;
             padding: 12px 0;
-            width: 160px; /* Фиксированная одинаковая ширина */
+            width: 160px; 
             letter-spacing: 1px;
             transition: all 0.3s; 
             text-decoration: none;
             border-radius: 2px;
         }
         
-        /* Цветовое разделение кнопок */
-        .like-btn-style {
-            border: 1px solid var(--accent); 
-            color: var(--accent);
-        }
-        .like-btn-style:hover { 
-            background: rgba(188, 152, 85, 0.1);
-            box-shadow: 0 0 15px rgba(188, 152, 85, 0.3); 
-        }
+        .like-btn-style { border: 1px solid var(--accent); color: var(--accent); }
+        .like-btn-style:hover { background: rgba(188, 152, 85, 0.1); box-shadow: 0 0 15px rgba(188, 152, 85, 0.3); }
         
-        .donate-btn-style {
-            border: 1px solid var(--donate-color); 
-            color: var(--donate-color);
-        }
-        .donate-btn-style:hover { 
-            background: rgba(34, 197, 94, 0.1);
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); 
-        }
+        .donate-btn-style { border: 1px solid var(--donate-color); color: var(--donate-color); }
+        .donate-btn-style:hover { background: rgba(34, 197, 94, 0.1); box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
 
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
 
+        /* Стили под мобильные устройства: разносим футер еще дальше */
         @media (max-width: 600px) {
             body { padding: 20px 15px; justify-content: flex-start; }
-            main { margin: 20px 0; padding: 40px 20px; }
+            main { margin: 20px 0 60px 0; padding: 40px 20px; } /* Добавлен отступ снизу у карточки */
             .header-stats-group { gap: 10px; flex-direction: column; align-items: flex-start; }
             .footer-btn-container { flex-direction: row; }
-            footer { margin-top: 10px; padding-top: 15px; padding-bottom: 25px; }
+            footer { margin-top: 40px; padding-top: 20px; padding-bottom: 30px; }
         }
     </style>
 </head>
@@ -229,22 +222,25 @@
     <div id="donate-modal" class="modal-overlay">
         <div class="modal-card donate-card">
             <h2>SUPPORT MODULE</h2>
-            <p style="text-align: center; margin-bottom: 15px; font-size: 0.85rem;">Вы можете поддержать проект удобным способом:</p>
+            <p style="text-align: center; margin-bottom: 25px; font-size: 0.85rem; color: var(--text-main);">Choose your preferred method to support the project:</p>
             
-            <div class="stats" style="margin-bottom: 5px;">[METHOD 01] СБЕРБАНК (РФ):</div>
-            <a href="https://messenger.online.sberbank.ru/sl/kzEsbRgBZb6cf7Upy" target="_blank" class="btn" style="display: block; text-align: center; padding: 10px; font-size: 0.8rem; text-decoration: none; border-color: var(--donate-color); color: var(--donate-color); margin-bottom: 20px;">Открыть СберЧаты ☕</a>
-            
-            <div class="stats">[METHOD 02] CRYPTO WALLET (TON / USDT):</div>
-            <div class="wallet-box" id="crypto-address">UQB4NY_1ula9p2YJpM0kHPEjbJOmOUK1JNwYUNu9_T2TlAbt</div>
-            
-            <button class="btn secondary" id="copy-wallet-btn" style="width: 100%; padding: 10px; font-size: 0.8rem;">Копировать адрес кошелька</button>
-            
-            <div class="donate-notice">
-                <strong>NOTICE:</strong> Использование криптовалюты в качестве платежного средства на территории РФ ограничено. Данный метод предназначен для международных транзакций.
+            <div class="donate-method-block">
+                <div class="stats">[METHOD 01] SBERBANK (RU):</div>
+                <a href="https://messenger.online.sberbank.ru/sl/kzEsbRgBZb6cf7Upy" target="_blank" class="btn" style="display: block; text-align: center; padding: 12px; font-size: 0.8rem; text-decoration: none; border-color: var(--donate-color); color: var(--donate-color); margin-top: 8px;">Open SberChat ☕</a>
             </div>
             
-            <div style="text-align: center; margin-top: 25px;">
-                <button class="btn" id="close-donate-btn" style="border-color: var(--text-muted); color: var(--text-muted); padding: 8px 25px;">ЗАКРЫТЬ</button>
+            <div class="donate-method-block">
+                <div class="stats">[METHOD 02] CRYPTO WALLET (TON / USDT):</div>
+                <div class="wallet-box" id="crypto-address">UQB4NY_1ula9p2YJpM0kHPEjbJOmOUK1JNwYUNu9_T2TlAbt</div>
+                <button class="btn secondary" id="copy-wallet-btn" style="width: 100%; padding: 10px; font-size: 0.8rem; letter-spacing: 1px;">COPY WALLET ADDRESS</button>
+            </div>
+            
+            <div class="donate-notice">
+                <strong>NOTICE:</strong> Cryptocurrency transactions are intended primarily for international supporters. Please make sure you comply with your local financial regulations.
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" id="close-donate-btn" style="border-color: var(--text-muted); color: var(--text-muted); padding: 10px 30px; font-size: 0.8rem;">CLOSE</button>
             </div>
         </div>
     </div>
@@ -321,7 +317,6 @@
             document.getElementById('like-btn').style.borderColor = 'var(--accent)';
         }
 
-        // Логика открытия/закрытия модалки доната
         const donateModal = document.getElementById('donate-modal');
         document.getElementById('open-donate-btn').addEventListener('click', () => {
             donateModal.classList.add('active');
@@ -330,11 +325,10 @@
             donateModal.classList.remove('active');
         });
         
-        // Копирование криптокошелька
         document.getElementById('copy-wallet-btn').addEventListener('click', () => {
             const address = document.getElementById('crypto-address').innerText;
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(address).then(() => alert("Адрес кошелька скопирован!")).catch(() => fallbackCopy(address));
+                navigator.clipboard.writeText(address).then(() => alert("Wallet address copied!")).catch(() => fallbackCopy(address));
             } else {
                 fallbackCopy(address);
             }
