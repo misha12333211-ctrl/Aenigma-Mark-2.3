@@ -118,7 +118,7 @@
 
         .game-info-container { width: 100%; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
         
-        /* Фиксированная кнопка лайка (тусклый минималистичный вид) */
+        /* Фиксированная кнопка лайка */
         .floating-like-btn {
             position: fixed;
             bottom: 25px;
@@ -156,7 +156,6 @@
             color: var(--text-main);
         }
         
-        /* Ненавязчивая подсветка белым цветом ПОСЛЕ клика */
         .floating-like-btn.liked {
             border-color: var(--text-main) !important;
             color: #fff !important;
@@ -167,7 +166,7 @@
             color: #fff !important;
         }
 
-        /* Текстовый футер и аккуратная уменьшенная кнопка доната */
+        /* Текстовый футер */
         footer { 
             width: 100%; max-width: 600px; border-top: 1px solid var(--border); margin-top: auto; padding-top: 25px; padding-bottom: 25px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
             display: flex; flex-direction: column; align-items: center; gap: 15px; flex-shrink: 0;
@@ -196,23 +195,18 @@
         }
         .donate-btn-style { border: 1px solid var(--border); color: var(--text-muted); }
         .donate-btn-style:hover { border-color: var(--donate-color); color: var(--donate-color); background: rgba(34, 197, 94, 0.05); box-shadow: 0 0 12px rgba(34, 197, 94, 0.2); }
-        
-        .footer-credits {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+
+        /* Текстовая серая ссылка для политики */
         .privacy-link {
             color: var(--text-muted);
             text-decoration: none;
             cursor: pointer;
             transition: color 0.3s;
+            margin-top: 4px;
+            display: inline-block;
         }
         .privacy-link:hover {
-            color: var(--text-main);
-            text-decoration: underline;
+            color: var(--accent);
         }
 
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
@@ -319,32 +313,16 @@
         </div>
     </div>
 
-    <!-- Модальное окно политики конфиденциальности (GDPR, CCPA Compliant) -->
+    <!-- Обновленное модальное окно политики конфиденциальности -->
     <div id="privacy-modal" class="modal-overlay">
-        <div class="modal-card donate-card" style="max-width: 550px; text-align: left; border-color: var(--accent); box-shadow: 0 0 40px rgba(188, 152, 85, 0.15);">
+        <div class="modal-card donate-card" style="max-width: 500px; text-align: left;">
             <h2 style="color: var(--accent); text-align: center; margin-bottom: 20px;">PRIVACY POLICY</h2>
-            <div style="font-size: 0.75rem; line-height: 1.6; max-height: 350px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px; color: var(--text-main);">
-                <p style="margin-bottom: 12px; color: var(--text-muted); text-align: left;"><strong>Effective Date: July 13, 2026</strong></p>
-                <p style="margin-bottom: 15px; text-align: left;">This Privacy Policy governs the processing of data collected by the web application <strong>AENIGMA [Mark 2.3]</strong> accessible via <a href="https://aenigma-mark-2-3.onrender.com/" target="_blank" style="color: var(--accent); text-decoration: underline;">https://aenigma-mark-2-3.onrender.com/</a> (hereinafter "the Service").</p>
-                
-                <p style="margin-bottom: 8px; text-align: left; color: var(--accent);"><strong>1. Scope of Data & GDPR/CCPA Compliance:</strong></p>
-                <p style="margin-bottom: 15px; text-align: left;">The Service is designed to comply with global data protection laws, including the European General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA). We do not collect, harvest, lease, or request any directly identifying Personal Information (PII) such as real names, physical addresses, or personal contact details.</p>
-                
-                <p style="margin-bottom: 8px; text-align: left; color: var(--accent);"><strong>2. Data Processing & Infrastructure:</strong></p>
-                <p style="margin-bottom: 15px; text-align: left;">To deliver synchronized global gaming stats (live player counts, completion rates, game attempts), the Service communicates with <strong>Google Firebase Realtime Database</strong>. 
-                <br>• <strong>Network Logs:</strong> Under GDPR, a user's IP address constitutes personal data. Firebase may process your IP address and connection timestamps on European-based servers purely for transmission and system stability. These network logs are ephemeral and are not processed or shared for marketing purposes.
-                <br>• <strong>Render Hosting:</strong> Static assets are served via Render. Render processes minimal, standard web-server logs required to maintain service availability.</p>
-
-                <p style="margin-bottom: 8px; text-align: left; color: var(--accent);"><strong>3. Cryptocurrency Transfers & Public Ledgers:</strong></p>
-                <p style="margin-bottom: 15px; text-align: left;">If you voluntarily choose to support this module using the provided TON / USDT crypto address:
-                <br>• Your transaction, transaction hash, and public wallet address are written permanently to the public decentralized ledger (blockchain).
-                <br>• These records are entirely public by design. The Service does not correlate, map, or link any blockchain wallet addresses with your specific game statistics, localStorage, or real-life identity.</p>
-
-                <p style="margin-bottom: 8px; text-align: left; color: var(--accent);"><strong>4. Browser Local Storage:</strong></p>
-                <p style="margin-bottom: 15px; text-align: left;">We do not use tracking or targeting cookies. The Service uses your browser’s HTML5 Local Storage solely to retain your localized state (such as persisting your 'Liked' token and level progress offline). This data remains on your machine and is not sent to our servers.</p>
-
-                <p style="margin-bottom: 8px; text-align: left; color: var(--accent);"><strong>5. Your Rights & Data Erasure:</strong></p>
-                <p style="margin-bottom: 15px; text-align: left;">As a global user, you hold complete autonomy over your local data. You can exercise your right to erasure instantly by clearing your browser's application cache/cookies at any time. Our Firebase real-time database holds no record of you once you close your active browser session.</p>
+            <div style="font-size: 0.8rem; line-height: 1.6; max-height: 300px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px; color: var(--text-main);">
+                <p style="margin-bottom: 12px; text-align: left; color: var(--text-muted);">URL: https://aenigma-mark-2-3.onrender.com/</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>1. Collected Data:</strong> This website does not request, collect, or store personal identifiable information such as names, emails, or personal credentials.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>2. Infrastructure & Analytics:</strong> We use Google Firebase to handle live module features (active online synchronization, global counters). Google Firebase may temporarily process technical identifiers, including IP addresses, strictly to sustain stable real-time connections.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>3. Blockchain Contributions:</strong> Cryptocurrency contributions (TON / USDT) are processed transparently via the public decentralized blockchain ledger. Your public wallet address and transaction history are visible on the network. We do not correlate your public wallet metadata with your local gameplay or personal identity.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>4. Local Storage:</strong> The module utilizes standard browser Local Storage exclusively to remember your localized interaction states (such as retaining level milestones and preventing multiple layout system likes).</p>
             </div>
             <div style="text-align: center;">
                 <button class="btn" id="close-privacy-btn" style="border-color: var(--text-muted); color: var(--text-muted); padding: 10px 30px; font-size: 0.8rem;">CLOSE</button>
@@ -356,8 +334,8 @@
         <div class="footer-btn-container">
             <button id="open-donate-btn" class="action-btn donate-btn-style">☕ Donate</button>
         </div>
-        <div class="footer-credits">
-            <span>&copy; 2026 Stanislav A.</span>
+        <div>
+            &copy; 2026 Stanislav A.<br>
             <a id="open-privacy-btn" class="privacy-link">Privacy Policy</a>
         </div>
     </footer>
@@ -369,7 +347,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyDkFTLYk0Jd02thV6DLEzB8hJF-B9IRx68",
             authDomain: "aenigma-mark-23.firebaseapp.com",
-            databaseURL: "https://aenigma-mark-2-3-default-rtdb.europe-west1.firebasedatabase.app",
+            databaseURL: "https://aenigma-mark-23-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "aenigma-mark-23", storageBucket: "aenigma-mark-23.firebasestorage.app",
             messagingSenderId: "318632324088", appId: "1:318632324088:web:c9ff426bac663a64ca840d"
         };
@@ -433,8 +411,7 @@
         });
 
         const privacyModal = document.getElementById('privacy-modal');
-        document.getElementById('open-privacy-btn').addEventListener('click', (e) => {
-            e.preventDefault();
+        document.getElementById('open-privacy-btn').addEventListener('click', () => {
             privacyModal.classList.add('active');
         });
         document.getElementById('close-privacy-btn').addEventListener('click', () => {
