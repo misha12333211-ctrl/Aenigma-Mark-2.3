@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AENIGMA Mark 2.3 — 24-Level Puzzle Challenge</title>
+    <title>AENIGMA Mark 2.3 — The Meme Edition</title>
     
     <!-- SEO & Indexing -->
-    <meta name="description" content="AENIGMA Mark 2.3 — a 24-level puzzle game featuring logic, ciphers and interactive challenges.">
+    <meta name="description" content="AENIGMA Mark 2.3 — A 24-level puzzle game featuring internet lore, logic, and interactive challenges.">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph (Social Media Sharing) -->
-    <meta property="og:title" content="AENIGMA Mark 2.3">
-    <meta property="og:description" content="24-level puzzle challenge.">
+    <meta property="og:title" content="AENIGMA Mark 2.3 — Meme Edition">
+    <meta property="og:description" content="24-level post-ironic puzzle challenge.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://aenigma-mark-2-3.onrender.com/">
-    <meta property="og:image" content="https://aenigma-mark-2-3.onrender.com/preview.png">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -22,20 +21,6 @@
 
     <style>
         :root {
-            --bg-color: #050507;
-            --card-bg: #0c0c0e;
-            --accent: #bc9855; 
-            --text-main: #e4e4e7;
-            --text-muted: #52525b;
-            --border: #18181b;
-            --error: #7f1d1d;
-            --success: #15803d;
-            --donate-color: #22c55e;
-            --crypto-accent: #06b6d4; 
-        }
-        
-        /* Neon Meme Theme triggered via JS */
-        body.meme-mode-active {
             --accent: #ff007f; /* Hot Pink */
             --bg-color: #0d001a; /* Dark Purple */
             --card-bg: #1a0033;
@@ -43,8 +28,9 @@
             --text-main: #00ffff; /* Neon Cyan */
             --text-muted: #8b5cf6;
             --success: #22c55e;
-            background-image: radial-gradient(circle, #2a004d 1px, transparent 1px);
-            background-size: 20px 20px;
+            --error: #ef4444;
+            --donate-color: #22c55e;
+            --crypto-accent: #06b6d4; 
         }
 
         * { 
@@ -57,10 +43,19 @@
         }
         
         body {
-            background-color: var(--bg-color); color: var(--text-main); min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 20px;
-            overflow-x: hidden; overflow-y: auto; position: relative;
-            transition: all 0.5s ease;
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            min-height: 100vh;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start; 
+            padding: 40px 20px;
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            position: relative;
+            background-image: radial-gradient(circle, #2a004d 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
         header { 
@@ -81,26 +76,27 @@
         .stats strong { color: var(--accent); }
         
         main {
-            width: 100%; max-width: 600px; background: var(--card-bg); border: 1px solid var(--border);
-            padding: 50px 40px; border-radius: 2px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); text-align: center; position: relative;
-            margin: 40px 0; display: flex; flex-direction: column; justify-content: center;
+            width: 100%; 
+            max-width: 600px; 
+            background: var(--card-bg); 
+            border: 1px solid var(--border);
+            padding: 50px 40px; 
+            border-radius: 2px; 
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.2); 
+            text-align: center; 
+            position: relative;
+            margin: 40px 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
         }
         .screen { display: none; }
         .screen.active { display: block; }
         h1 { font-size: 1.6rem; letter-spacing: 5px; margin-bottom: 30px; color: #fff; position: relative; z-index: 20; }
         
-        /* Secret Easter Egg Clickable Title */
-        #secret-meme-trigger {
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        #secret-meme-trigger:active {
-            transform: scale(0.95);
-        }
-
         p { color: var(--text-main); line-height: 1.8; margin-bottom: 35px; font-size: 0.95rem; text-align: justify; position: relative; z-index: 20; }
         input[type="text"] {
-            width: 100%; background: var(--bg-color); border: 1px solid var(--border); padding: 15px; color: #fff;
+            width: 100%; background: #050507; border: 1px solid var(--border); padding: 15px; color: #fff;
             margin-bottom: 25px; outline: none; text-align: center; letter-spacing: 2px; font-size: 1.1rem;
             transition: all 0.3s ease; -webkit-user-select: text; user-select: text; position: relative; z-index: 20;
         }
@@ -112,19 +108,18 @@
             cursor: pointer; font-weight: bold; letter-spacing: 3px; transition: all 0.3s; font-size: 0.9rem;
             touch-action: manipulation;
         }
-        .btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px rgba(188, 152, 85, 0.4); }
-        body.meme-mode-active .btn:hover { box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); }
+        .btn:hover { background: var(--accent); color: #0d001a; box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); }
         
         .btn:disabled { border-color: var(--text-muted); color: var(--text-muted); cursor: not-allowed; box-shadow: none; background: none; }
         .btn.secondary { border-color: var(--text-muted); color: var(--text-muted); }
-        .btn.secondary:hover { background: var(--text-muted); color: var(--bg-color); }
+        .btn.secondary:hover { background: var(--text-muted); color: #0d001a; }
         
         .clicker-btn {
             width: 100px; height: 100px; border-radius: 50%; border: 2px dashed var(--accent); background: none;
             color: var(--accent); font-size: 2rem; cursor: pointer; margin: 20px auto; display: none;
             transition: all 0.2s; touch-action: none; position: relative; z-index: 20;
         }
-        .clicker-btn:active { background: rgba(188, 152, 85, 0.2); transform: scale(0.95); }
+        .clicker-btn:active { background: rgba(255, 0, 127, 0.2); transform: scale(0.95); }
         
         #void-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: crosshair; display: none; touch-action: none; pointer-events: none; }
         
@@ -136,8 +131,8 @@
             z-index: 1000; justify-content: center; align-items: center; opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; visibility: visible; }
-        .modal-card { background: var(--card-bg); border: 1px solid var(--success); padding: 40px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 0 30px rgba(21, 128, 61, 0.2); }
-        .modal-card h2 { color: #22c55e; font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 15px; }
+        .modal-card { background: var(--card-bg); border: 1px solid var(--border); padding: 40px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 0 30px rgba(255, 0, 127, 0.2); }
+        .modal-card h2 { color: var(--accent); font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 15px; }
         .modal-card p { margin-bottom: 25px; }
         
         .modal-card.donate-card { border-color: var(--donate-color); box-shadow: 0 0 40px rgba(34, 197, 94, 0.25); text-align: left; padding: 35px 30px; }
@@ -263,7 +258,6 @@
             opacity: 0.8;
         }
 
-        /* Mobile Adaptation */
         @media (max-width: 600px) {
             body { padding: 20px 15px; }
             header { width: 100%; }
@@ -294,8 +288,10 @@
         <canvas id="void-canvas"></canvas>
 
         <div id="start-screen" class="screen active">
-            <h1 id="secret-meme-trigger">AENIGMA <span style="color: var(--accent);" id="version-badge">[Mark 2.3]</span></h1>
-            <p id="start-desc">Welcome to the 24-level module. Levels 1-15 contain logical riddles. Levels 16-24 enter the "HELL SECTOR" -- ancient ciphers, raw interactive action, zero hints, minimal text. Neural networks cannot parse this sector. Good luck.</p>
+            <h1>AENIGMA <span style="color: var(--accent);">[Meme Edition]</span></h1>
+            <p>Welcome to the 24-level post-ironic module. 
+
+WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your performance, absolute memes will challenge your cognitive limits, and no AI model on the planet can help you here. Ready?</p>
             <button class="btn" onclick="window.startGame()">INITIALIZE</button>
         </div>
 
@@ -315,13 +311,13 @@
             </div>
             
             <div id="hint-box" class="hint-box">
-                <strong id="hint-module-title">ANALYSIS MODULE:</strong> <span id="level-hint">...</span>
+                <strong>MEME ADVISOR:</strong> <span id="level-hint">...</span>
             </div>
         </div>
 
         <div id="victory-screen" class="screen">
-            <h1 id="victory-title">GOD MODE ENGAGED</h1>
-            <p id="victory-desc">Unbelievable. You conquered all 24 layers, bypassing the anti-AI sector. You have proven absolute cognitive dominance over machine logic.</p>
+            <h1>GIGACHAD STATUS ACHIEVED</h1>
+            <p>You absolute madlad! You broke the matrix, outsmarted the anti-AI filters, survived the screams of MJ, and proved your meme comprehension is unmatched.</p>
             <div class="btn-container">
                 <button class="btn" id="restart-btn">RESTART MODULE</button>
                 <button class="btn secondary" id="share-btn">COPY SHARE LINK</button>
@@ -337,7 +333,7 @@
 
     <div id="success-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2 id="success-modal-title">ACCESS GRANTED</h2>
+            <h2>HEE-HEE! ACCESS GRANTED!</h2>
             <p id="modal-message">...</p>
             <button class="btn" id="modal-continue-btn">CONTINUE</button>
         </div>
@@ -368,21 +364,18 @@
         <div class="modal-card donate-card" style="max-width: 500px; text-align: left;">
             <h2 style="color: var(--accent); text-align: center; margin-bottom: 20px;">PRIVACY POLICY</h2>
             <div style="font-size: 0.8rem; line-height: 1.6; max-height: 320px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px; color: var(--text-main);">
-                <p style="margin-bottom: 12px; text-align: left; color: var(--text-muted); font-size: 0.75rem;">Effective Date: July 13, 2026</p>
+                <p style="margin-bottom: 12px; text-align: left; color: var(--text-muted); font-size: 0.75rem;">Effective Date: July 16, 2026</p>
                 <p style="margin-bottom: 15px; text-align: left;"><strong>URL:</strong> <span style="color: var(--accent); user-select: text; font-weight: bold;">https://aenigma-mark-2-3.onrender.com/</span></p>
                 
-                <p style="margin-bottom: 15px; text-align: left;"><strong>1. Personal Data:</strong> This website does not request, collect, or store personally identifiable information (PII) such as names, email addresses, or account credentials.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>2. Infrastructure & Analytics:</strong> We use Google Firebase to handle live module features (active online synchronization, global counters). Google Firebase may process technical information, including IP addresses and connection metadata, as required to provide real-time synchronization.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>3. Cookies:</strong> This website does not use cookies for advertising or user tracking. Some third-party services (such as Google Firebase) may use cookies or similar technologies as required for their operation.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>4. Blockchain Contributions:</strong> Cryptocurrency contributions (TON / USDT) are processed transparently via the public decentralized blockchain ledger. Your public wallet address and transaction history are visible on the network. We do not correlate your public wallet metadata with your local gameplay or personal identity.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>5. Local Storage:</strong> The module utilizes standard browser Local Storage exclusively to remember your localized interaction states, such as saving game progress and preventing duplicate likes from the same browser.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>6. Third-Party Services:</strong> Google Firebase provides real-time database functionality. Render hosts the application infrastructure. These providers may process technical information necessary to deliver their services in accordance with their own privacy policies. You can review them here:<br>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>1. Personal Data:</strong> This website does not request, collect, or store personally identifiable information (PII).</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>2. Infrastructure & Analytics:</strong> We use Google Firebase to handle live module features (active online synchronization, global counters).</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>3. Cookies:</strong> This website does not use cookies for advertising or user tracking.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>4. Blockchain Contributions:</strong> Cryptocurrency contributions (TON / USDT) are processed transparently via the public decentralized blockchain ledger.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>5. Local Storage:</strong> The module utilizes standard browser Local Storage exclusively to remember your localized interaction states.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>6. Third-Party Services:</strong> Google Firebase provides real-time database functionality. Render hosts the application infrastructure.
                 &bull; <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="privacy-inner-link">Google Privacy Policy</a><br>
                 &bull; <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener" class="privacy-inner-link">Firebase Privacy and Security</a><br>
                 &bull; <a href="https://render.com/privacy" target="_blank" rel="noopener" class="privacy-inner-link">Render Privacy Policy</a></p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>7. User Rights:</strong> Since this website does not collect personal information directly, there is generally no personal data stored that can be corrected or deleted upon request.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>8. Policy Changes:</strong> We may update this Privacy Policy from time to time. Any changes will be published on this page together with an updated Effective Date.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>9. Contact:</strong> If you have questions regarding this Privacy Policy, you may contact the project owner at <span style="color: var(--accent); user-select: text; font-weight: bold;">stasaleskin80@gmail.com</span>.</p>
             </div>
             <div style="text-align: center;">
                 <button class="btn" id="close-privacy-btn" style="border-color: var(--text-muted); color: var(--text-muted); padding: 10px 30px; font-size: 0.8rem;">CLOSE</button>
@@ -433,11 +426,8 @@
         let serverLevelData = null;
         let myUserRef = null;
 
-        // --- MEME ENGINE & SOUNDS ---
-        let isMemeMode = false;
-        let triggerClicks = 0;
-
-        // Sound clips with fallback handles
+        // --- AUDIO ENGINE ---
+        // Инициализируем аудиообъекты
         const sounds = {
             heeHee: new Audio("https://www.myinstants.com/media/sounds/michael-jackson-hee-hee.mp3"), 
             ow: new Audio("https://www.myinstants.com/media/sounds/mj-ow.mp3"), 
@@ -445,32 +435,22 @@
             bgMusic: new Audio("https://ia800605.us.archive.org/8/items/8-bitBeatItMichaelJacksonCover/8-bit%20Beat%20It%20-%20Michael%20Jackson%20Cover.mp3") 
         };
         sounds.bgMusic.loop = true;
-        sounds.bgMusic.volume = 0.20;
+        sounds.bgMusic.volume = 0.15;
 
-        // Secret code click trigger to unlock MEME MODE (Click AENIGMA 5 times)
-        document.getElementById('secret-meme-trigger').addEventListener('click', () => {
-            triggerClicks++;
-            if (triggerClicks === 5) {
-                activateMemeMode();
-            }
-        });
-
-        function activateMemeMode() {
-            isMemeMode = true;
-            document.body.classList.add('meme-mode-active');
-            sounds.heeHee.play();
-            
-            // Visual interface updates for MEME mode (Fully in English)
-            document.getElementById('version-badge').innerHTML = "[MEME EDITION]";
-            document.getElementById('version-badge').style.color = "#00ffff";
-            document.getElementById('start-desc').innerText = "WARNING! You have activated POST-IRONY MODE. Michael Jackson will scream on every interaction, memes will tear logical processing apart, and AI models will beg for mercy. Ready to enter the CRINGE SECTOR?";
-            document.getElementById('hint-module-title').innerText = "MEME ADVISOR:";
-            document.getElementById('success-modal-title').innerText = "HEE-HEE! SECTOR CLEARED!";
-            document.getElementById('victory-title').innerText = "GIGACHAD STATUS ACHIEVED";
-            document.getElementById('victory-desc').innerText = "You absolute madlad! You broke the matrix, outsmarted the anti-AI filters, and proved your meme comprehension far exceeds standard logical models.";
-            
-            // Start 8-bit Beat It background track
-            sounds.bgMusic.play().catch(e => console.log("Audio playback waiting for manual user gesture."));
+        // Функция принудительной разблокировки аудио (Browser Bypass)
+        function unlockAudioEngine() {
+            // Играем тишину во всех дорожках, чтобы браузер одобрил последующие вызовы .play()
+            Object.values(sounds).forEach(sound => {
+                const playPromise = sound.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        if (sound !== sounds.bgMusic) {
+                            sound.pause();
+                            sound.currentTime = 0;
+                        }
+                    }).catch(e => console.log("Audio unlock debug:", e));
+                }
+            });
         }
 
         onValue(likesRef, (snap) => { 
@@ -486,7 +466,8 @@
             if (localStorage.getItem('aenigma_liked')) {
                 likeBtnEl.classList.add('shake');
                 setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
-                if (isMemeMode) sounds.ow.play(); // Play OW! when trying to double-like
+                sounds.ow.currentTime = 0;
+                sounds.ow.play().catch(()=>{});
                 return;
             }
             likeBtnEl.style.pointerEvents = 'none';
@@ -494,7 +475,8 @@
                 await runTransaction(likesRef, (currentValue) => (currentValue || 0) + 1);
                 localStorage.setItem('aenigma_liked', 'true');
                 likeBtnEl.classList.add('liked');
-                if (isMemeMode) sounds.heeHee.play(); // Hee-Hee when liking
+                sounds.heeHee.currentTime = 0;
+                sounds.heeHee.play().catch(()=>{});
             } catch (err) { 
                 likeBtnEl.classList.add('shake');
                 setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
@@ -562,7 +544,10 @@
         });
 
         window.startGame = function() {
-            if (isMemeMode) sounds.bgMusic.play().catch(() => {});
+            // Разблокируем аудиопоток при первом реальном клике пользователя
+            unlockAudioEngine();
+            sounds.bgMusic.play().catch(e => console.log("Bg music failed to auto-start:", e));
+
             document.getElementById('start-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
             loadLevelFromServer();
@@ -571,7 +556,7 @@
         async function loadLevelFromServer() {
             if (kineticAnimationFrameId) { cancelAnimationFrame(kineticAnimationFrameId); kineticAnimationFrameId = null; }
             try {
-                const response = await fetch(`${API_URL}/getLevelData?index=${currentLevelIndex}&memeMode=${isMemeMode}`);
+                const response = await fetch(`${API_URL}/getLevelData?index=${currentLevelIndex}`);
                 const data = await response.json();
                 if (data.finished) { showVictoryScreen(); return; }
                 serverLevelData = data;
@@ -645,8 +630,7 @@
                     body: JSON.stringify({ 
                         index: currentLevelIndex, 
                         answer: answerString, 
-                        rawData: rawData,
-                        memeMode: isMemeMode 
+                        rawData: rawData
                     })
                 });
                 const result = await response.json();
@@ -657,12 +641,9 @@
         }
 
         function triggerSuccess() {
-            if (isMemeMode) {
-                sounds.heeHee.play(); // Hee-Hee scream on success
-                document.getElementById('modal-message').textContent = `HEE-HEE! Layer ${currentLevelIndex + 1} demolished! Shamone!`;
-            } else {
-                document.getElementById('modal-message').textContent = `Layer ${currentLevelIndex + 1} dismantled. Continuing infiltration...`;
-            }
+            sounds.heeHee.currentTime = 0;
+            sounds.heeHee.play().catch(()=>{});
+            document.getElementById('modal-message').textContent = `HEE-HEE! Layer ${currentLevelIndex + 1} demolished! Shamone!`;
             document.getElementById('success-modal').classList.add('active');
         }
 
@@ -670,9 +651,8 @@
             const el = document.getElementById('user-answer').style.display !== 'none' ? document.getElementById('user-answer') : document.getElementById('clicker-node');
             el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400);
             
-            if (isMemeMode) {
-                sounds.ow.play(); // Ow! scream on failure
-            }
+            sounds.ow.currentTime = 0;
+            sounds.ow.play().catch(()=>{});
 
             wrongAttempts++; 
             document.getElementById('attempt-counter').textContent = wrongAttempts;
@@ -706,10 +686,8 @@
             clickBtn.onmousedown = clickBtn.ontouchstart = (e) => { 
                 e.preventDefault(); 
                 lastClickTime = Date.now(); 
-                if (isMemeMode) {
-                    sounds.beatboxClick.currentTime = 0;
-                    sounds.beatboxClick.play();
-                }
+                sounds.beatboxClick.currentTime = 0;
+                sounds.beatboxClick.play().catch(()=>{});
             };
             clickBtn.onmouseup = clickBtn.ontouchend = async (e) => {
                 e.preventDefault();
@@ -731,12 +709,10 @@
             canvas.height = canvas.parentElement.clientHeight;
             ctx.clearRect(0,0, canvas.width, canvas.height);
 
-            if (isMemeMode) {
-                ctx.style = "rgba(255, 0, 127, 0.07)";
-                ctx.font = "bold 14px 'Courier New'";
-                ctx.textAlign = "center";
-                ctx.fillText("⭐ DRAW A SMILE FOR RICKY ⭐", canvas.width / 2, canvas.height / 2 - 20);
-            }
+            ctx.style = "rgba(255, 0, 127, 0.07)";
+            ctx.font = "bold 14px 'Courier New'";
+            ctx.textAlign = "center";
+            ctx.fillText("⭐ DRAW A SMILE FOR RICKY ⭐", canvas.width / 2, canvas.height / 2 - 20);
 
             canvas.onmousedown = canvas.ontouchstart = (e) => { e.preventDefault(); drawing = true; strokePoints = []; };
             canvas.onmouseup = canvas.ontouchend = async (e) => { 
@@ -751,7 +727,7 @@
                 const pt = { x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) };
                 strokePoints.push(pt);
                 
-                ctx.fillStyle = isMemeMode ? '#00ffff' : '#bc9855'; 
+                ctx.fillStyle = '#00ffff'; 
                 ctx.fillRect(pt.x, pt.y, 4, 4);
             };
         }
@@ -762,11 +738,11 @@
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight; 
             
-            const letters = isMemeMode ? ["C", "R", "I", "N", "G", "E"] : ["V", "O", "R", "T", "E", "X"];
+            const letters = ["C", "R", "I", "N", "G", "E"];
 
             function processFrame() {
                 if (currentLevelIndex < 15) return;
-                ctx.fillStyle = isMemeMode ? 'rgba(26, 0, 51, 0.2)' : 'rgba(12, 12, 14, 0.2)'; 
+                ctx.fillStyle = 'rgba(26, 0, 51, 0.2)'; 
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 const time = performance.now();
 
@@ -782,20 +758,20 @@
                     for (let i = 0; i < totalLetters; i++) {
                         const x = startX + i * (rectWidth + gap);
                         if (i === currentLetterIdx) {
-                            ctx.strokeStyle = isMemeMode ? '#00ffff' : '#bc9855'; ctx.lineWidth = 2; ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 2; ctx.strokeRect(x, startY, rectWidth, rectHeight);
                             for (let s = 0; s < 40; s++) { 
-                                ctx.fillStyle = isMemeMode ? `rgba(0, 255, 255, ${Math.random() * 0.7})` : `rgba(188, 152, 85, ${Math.random() * 0.7})`; 
+                                ctx.fillStyle = `rgba(0, 255, 255, ${Math.random() * 0.7})`; 
                                 ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2); 
                             }
                             ctx.fillStyle = '#fff'; ctx.font = 'bold 28px "Courier New"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                             ctx.fillText(letters[i], x + (rectWidth / 2) + (Math.random() * 4 - 2), startY + (rectHeight / 2));
                         } else {
-                            ctx.strokeStyle = isMemeMode ? '#2a004d' : '#18181b'; ctx.lineWidth = 1; ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            ctx.strokeStyle = '#2a004d'; ctx.lineWidth = 1; ctx.strokeRect(x, startY, rectWidth, rectHeight);
                         }
                     }
                 } else {
                     for (let i = 0; i < 350; i++) {
-                        ctx.fillStyle = isMemeMode ? `rgba(0, 255, 255, ${Math.random() * 0.12})` : `rgba(188, 152, 85, ${Math.random() * 0.12})`;
+                        ctx.fillStyle = `rgba(0, 255, 255, ${Math.random() * 0.12})`;
                         ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 1.5, Math.random() * 1.5);
                     }
                 }
@@ -806,8 +782,8 @@
 
         function getCleanUrl() { return window.location.href.startsWith('file://') ? 'https://google.com' : window.location.href; }
         function generateQR() { 
-            const color = isMemeMode ? "ff007f" : "bc9855";
-            try { document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(getCleanUrl())}&color=${color}&bgcolor=0c0c0e`; } catch(e){} 
+            const color = "ff007f";
+            try { document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(getCleanUrl())}&color=${color}&bgcolor=1a0033`; } catch(e){} 
         }
         function copyShareLink() {
             const u = window.location.href;
@@ -821,12 +797,8 @@
             document.getElementById('victory-screen').classList.remove('active'); 
             document.getElementById('start-screen').classList.add('active'); 
             window.updateMyLevelStatus(-1);
-            if (isMemeMode) sounds.bgMusic.pause();
-            isMemeMode = false;
-            triggerClicks = 0;
-            document.body.classList.remove('meme-mode-active');
-            document.getElementById('version-badge').innerHTML = "[Mark 2.3]";
-            document.getElementById('version-badge').style.color = "var(--accent)";
+            sounds.bgMusic.pause();
+            sounds.bgMusic.currentTime = 0;
         }
 
         document.getElementById('sub-btn').addEventListener('click', submitAnswer);
