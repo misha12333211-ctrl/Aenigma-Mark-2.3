@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AENIGMA Mark 2.3 — The Meme Edition</title>
+    <title>AENIGMA Mark 2.3 -- 24-Level Puzzle Challenge</title>
     
     <!-- SEO & Indexing -->
-    <meta name="description" content="AENIGMA Mark 2.3 — A 24-level puzzle game featuring internet lore, logic, and interactive challenges.">
+    <meta name="description" content="AENIGMA Mark 2.3 -- a 24-level puzzle game featuring logic, ciphers and interactive challenges.">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph (Social Media Sharing) -->
-    <meta property="og:title" content="AENIGMA Mark 2.3 — Meme Edition">
-    <meta property="og:description" content="24-level post-ironic puzzle challenge.">
+    <meta property="og:title" content="AENIGMA Mark 2.3">
+    <meta property="og:description" content="24-level puzzle challenge.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://aenigma-mark-2-3.onrender.com/">
+    <meta property="og:image" content="https://aenigma-mark-2-3.onrender.com/preview.png">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -21,18 +22,17 @@
 
     <style>
         :root {
-            --accent: #ff007f; /* Hot Pink */
-            --bg-color: #0d001a; /* Dark Purple */
-            --card-bg: #1a0033;
-            --border: #ff007f;
-            --text-main: #00ffff; /* Neon Cyan */
-            --text-muted: #8b5cf6;
-            --success: #22c55e;
-            --error: #ef4444;
+            --bg-color: #050507;
+            --card-bg: #0c0c0e;
+            --accent: #bc9855; 
+            --text-main: #e4e4e7;
+            --text-muted: #52525b;
+            --border: #18181b;
+            --error: #7f1d1d;
+            --success: #15803d;
             --donate-color: #22c55e;
             --crypto-accent: #06b6d4; 
         }
-
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -43,19 +43,9 @@
         }
         
         body {
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            min-height: 100vh;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: flex-start; 
-            padding: 40px 20px;
-            overflow-x: hidden; 
-            overflow-y: auto; 
-            position: relative;
-            background-image: radial-gradient(circle, #2a004d 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: var(--bg-color); color: var(--text-main); min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 20px;
+            overflow-x: hidden; overflow-y: auto; position: relative;
         }
 
         header { 
@@ -76,27 +66,16 @@
         .stats strong { color: var(--accent); }
         
         main {
-            width: 100%; 
-            max-width: 600px; 
-            background: var(--card-bg); 
-            border: 1px solid var(--border);
-            padding: 50px 40px; 
-            border-radius: 2px; 
-            box-shadow: 0 0 30px rgba(255, 0, 127, 0.2); 
-            text-align: center; 
-            position: relative;
-            margin: 40px 0; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center;
+            width: 100%; max-width: 600px; background: var(--card-bg); border: 1px solid var(--border);
+            padding: 50px 40px; border-radius: 2px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); text-align: center; position: relative;
+            margin: 40px 0; display: flex; flex-direction: column; justify-content: center;
         }
         .screen { display: none; }
         .screen.active { display: block; }
         h1 { font-size: 1.6rem; letter-spacing: 5px; margin-bottom: 30px; color: #fff; position: relative; z-index: 20; }
-        
         p { color: var(--text-main); line-height: 1.8; margin-bottom: 35px; font-size: 0.95rem; text-align: justify; position: relative; z-index: 20; }
         input[type="text"] {
-            width: 100%; background: #050507; border: 1px solid var(--border); padding: 15px; color: #fff;
+            width: 100%; background: var(--bg-color); border: 1px solid var(--border); padding: 15px; color: #fff;
             margin-bottom: 25px; outline: none; text-align: center; letter-spacing: 2px; font-size: 1.1rem;
             transition: all 0.3s ease; -webkit-user-select: text; user-select: text; position: relative; z-index: 20;
         }
@@ -108,18 +87,17 @@
             cursor: pointer; font-weight: bold; letter-spacing: 3px; transition: all 0.3s; font-size: 0.9rem;
             touch-action: manipulation;
         }
-        .btn:hover { background: var(--accent); color: #0d001a; box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); }
-        
+        .btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 15px rgba(188, 152, 85, 0.4); }
         .btn:disabled { border-color: var(--text-muted); color: var(--text-muted); cursor: not-allowed; box-shadow: none; background: none; }
         .btn.secondary { border-color: var(--text-muted); color: var(--text-muted); }
-        .btn.secondary:hover { background: var(--text-muted); color: #0d001a; }
+        .btn.secondary:hover { background: var(--text-muted); color: var(--bg-color); }
         
         .clicker-btn {
             width: 100px; height: 100px; border-radius: 50%; border: 2px dashed var(--accent); background: none;
             color: var(--accent); font-size: 2rem; cursor: pointer; margin: 20px auto; display: none;
             transition: all 0.2s; touch-action: none; position: relative; z-index: 20;
         }
-        .clicker-btn:active { background: rgba(255, 0, 127, 0.2); transform: scale(0.95); }
+        .clicker-btn:active { background: rgba(188, 152, 85, 0.2); transform: scale(0.95); }
         
         #void-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: crosshair; display: none; touch-action: none; pointer-events: none; }
         
@@ -131,8 +109,8 @@
             z-index: 1000; justify-content: center; align-items: center; opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; visibility: visible; }
-        .modal-card { background: var(--card-bg); border: 1px solid var(--border); padding: 40px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 0 30px rgba(255, 0, 127, 0.2); }
-        .modal-card h2 { color: var(--accent); font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 15px; }
+        .modal-card { background: var(--card-bg); border: 1px solid var(--success); padding: 40px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 0 30px rgba(21, 128, 61, 0.2); }
+        .modal-card h2 { color: #22c55e; font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 15px; }
         .modal-card p { margin-bottom: 25px; }
         
         .modal-card.donate-card { border-color: var(--donate-color); box-shadow: 0 0 40px rgba(34, 197, 94, 0.25); text-align: left; padding: 35px 30px; }
@@ -156,7 +134,7 @@
 
         .game-info-container { width: 100%; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
         
-        /* Floating Like Button */
+        /* Фиксированная кнопка лайка */
         .floating-like-btn {
             position: fixed;
             bottom: 25px;
@@ -204,7 +182,7 @@
             color: #fff !important;
         }
 
-        /* Footer */
+        /* Текстовый футер */
         footer { 
             width: 100%; max-width: 600px; border-top: 1px solid var(--border); margin-top: auto; padding-top: 25px; padding-bottom: 25px; text-align: center; font-size: 0.8rem; color: var(--text-muted); 
             display: flex; flex-direction: column; align-items: center; gap: 15px; flex-shrink: 0;
@@ -234,6 +212,7 @@
         .donate-btn-style { border: 1px solid var(--border); color: var(--text-muted); }
         .donate-btn-style:hover { border-color: var(--donate-color); color: var(--donate-color); background: rgba(34, 197, 94, 0.05); box-shadow: 0 0 12px rgba(34, 197, 94, 0.2); }
 
+        /* Текстовая серая ссылка для политики */
         .privacy-link {
             color: var(--text-muted);
             text-decoration: none;
@@ -249,6 +228,7 @@
         .shake { animation: shake 0.4s ease-in-out; border-color: var(--error) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
 
+        /* Стили ссылок внутри политики конфиденциальности */
         .privacy-inner-link {
             color: var(--accent);
             text-decoration: underline;
@@ -258,6 +238,7 @@
             opacity: 0.8;
         }
 
+        /* Мобильная адаптация */
         @media (max-width: 600px) {
             body { padding: 20px 15px; }
             header { width: 100%; }
@@ -288,10 +269,8 @@
         <canvas id="void-canvas"></canvas>
 
         <div id="start-screen" class="screen active">
-            <h1>AENIGMA <span style="color: var(--accent);">[Meme Edition]</span></h1>
-            <p>Welcome to the 24-level post-ironic module. 
-
-WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your performance, absolute memes will challenge your cognitive limits, and no AI model on the planet can help you here. Ready?</p>
+            <h1>AENIGMA <span style="color: var(--accent);">[Mark 2.3]</span></h1>
+            <p>Welcome to the 24-level module. Levels 1-15 contain logical riddles. Levels 16-24 enter the "HELL SECTOR" -- ancient ciphers, raw interactive action, zero hints, minimal text. Neural networks cannot parse this sector. Good luck.</p>
             <button class="btn" onclick="window.startGame()">INITIALIZE</button>
         </div>
 
@@ -311,20 +290,20 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
             </div>
             
             <div id="hint-box" class="hint-box">
-                <strong>MEME ADVISOR:</strong> <span id="level-hint">...</span>
+                <strong>ANALYSIS MODULE:</strong> <span id="level-hint">...</span>
             </div>
         </div>
 
         <div id="victory-screen" class="screen">
-            <h1>GIGACHAD STATUS ACHIEVED</h1>
-            <p>You absolute madlad! You broke the matrix, outsmarted the anti-AI filters, survived the screams of MJ, and proved your meme comprehension is unmatched.</p>
+            <h1>GOD MODE ENGAGED</h1>
+            <p>Unbelievable. You conquered all 24 layers, bypassing the anti-AI sector. You have proven absolute cognitive dominance over machine logic.</p>
             <div class="btn-container">
                 <button class="btn" id="restart-btn">RESTART MODULE</button>
                 <button class="btn secondary" id="share-btn">COPY SHARE LINK</button>
             </div>
-            <div class="share-section" style="margin-top: 30px;">
+            <div class="share-section">
                 <div class="stats">CHALLENGE YOUR FRIENDS:</div>
-                <div class="qr-frame" style="margin-top: 15px;"><img id="qr-code-img" src="" alt="Loading QR..."></div>
+                <div class="qr-frame"><img id="qr-code-img" src="" alt="Loading QR..."></div>
             </div>
         </div>
     </main>
@@ -333,7 +312,7 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
 
     <div id="success-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2>HEE-HEE! ACCESS GRANTED!</h2>
+            <h2>ACCESS GRANTED</h2>
             <p id="modal-message">...</p>
             <button class="btn" id="modal-continue-btn">CONTINUE</button>
         </div>
@@ -360,22 +339,26 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
         </div>
     </div>
 
+    <!-- Обновленное модальное окно политики конфиденциальности -->
     <div id="privacy-modal" class="modal-overlay">
         <div class="modal-card donate-card" style="max-width: 500px; text-align: left;">
             <h2 style="color: var(--accent); text-align: center; margin-bottom: 20px;">PRIVACY POLICY</h2>
             <div style="font-size: 0.8rem; line-height: 1.6; max-height: 320px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px; color: var(--text-main);">
-                <p style="margin-bottom: 12px; text-align: left; color: var(--text-muted); font-size: 0.75rem;">Effective Date: July 16, 2026</p>
+                <p style="margin-bottom: 12px; text-align: left; color: var(--text-muted); font-size: 0.75rem;">Effective Date: July 13, 2026</p>
                 <p style="margin-bottom: 15px; text-align: left;"><strong>URL:</strong> <span style="color: var(--accent); user-select: text; font-weight: bold;">https://aenigma-mark-2-3.onrender.com/</span></p>
                 
-                <p style="margin-bottom: 15px; text-align: left;"><strong>1. Personal Data:</strong> This website does not request, collect, or store personally identifiable information (PII).</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>2. Infrastructure & Analytics:</strong> We use Google Firebase to handle live module features (active online synchronization, global counters).</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>3. Cookies:</strong> This website does not use cookies for advertising or user tracking.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>4. Blockchain Contributions:</strong> Cryptocurrency contributions (TON / USDT) are processed transparently via the public decentralized blockchain ledger.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>5. Local Storage:</strong> The module utilizes standard browser Local Storage exclusively to remember your localized interaction states.</p>
-                <p style="margin-bottom: 15px; text-align: left;"><strong>6. Third-Party Services:</strong> Google Firebase provides real-time database functionality. Render hosts the application infrastructure.
+                <p style="margin-bottom: 15px; text-align: left;"><strong>1. Personal Data:</strong> This website does not request, collect, or store personally identifiable information (PII) such as names, email addresses, or account credentials.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>2. Infrastructure & Analytics:</strong> We use Google Firebase to handle live module features (active online synchronization, global counters). Google Firebase may process technical information, including IP addresses and connection metadata, as required to provide real-time synchronization.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>3. Cookies:</strong> This website does not use cookies for advertising or user tracking. Some third-party services (such as Google Firebase) may use cookies or similar technologies as required for their operation.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>4. Blockchain Contributions:</strong> Cryptocurrency contributions (TON / USDT) are processed transparently via the public decentralized blockchain ledger. Your public wallet address and transaction history are visible on the network. We do not correlate your public wallet metadata with your local gameplay or personal identity.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>5. Local Storage:</strong> The module utilizes standard browser Local Storage exclusively to remember your localized interaction states, such as saving game progress and preventing duplicate likes from the same browser.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>6. Third-Party Services:</strong> Google Firebase provides real-time database functionality. Render hosts the application infrastructure. These providers may process technical information necessary to deliver their services in accordance with their own privacy policies. You can review them here:<br>
                 &bull; <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="privacy-inner-link">Google Privacy Policy</a><br>
                 &bull; <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener" class="privacy-inner-link">Firebase Privacy and Security</a><br>
                 &bull; <a href="https://render.com/privacy" target="_blank" rel="noopener" class="privacy-inner-link">Render Privacy Policy</a></p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>7. User Rights:</strong> Since this website does not collect personal information directly, there is generally no personal data stored that can be corrected or deleted upon request.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>8. Policy Changes:</strong> We may update this Privacy Policy from time to time. Any changes will be published on this page together with an updated Effective Date.</p>
+                <p style="margin-bottom: 15px; text-align: left;"><strong>9. Contact:</strong> If you have questions regarding this Privacy Policy, you may contact the project owner at <span style="color: var(--accent); user-select: text; font-weight: bold;">stasaleskin80@gmail.com</span>.</p>
             </div>
             <div style="text-align: center;">
                 <button class="btn" id="close-privacy-btn" style="border-color: var(--text-muted); color: var(--text-muted); padding: 10px 30px; font-size: 0.8rem;">CLOSE</button>
@@ -426,33 +409,6 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
         let serverLevelData = null;
         let myUserRef = null;
 
-        // --- AUDIO ENGINE ---
-        // Инициализируем аудиообъекты
-        const sounds = {
-            heeHee: new Audio("https://www.myinstants.com/media/sounds/michael-jackson-hee-hee.mp3"), 
-            ow: new Audio("https://www.myinstants.com/media/sounds/mj-ow.mp3"), 
-            beatboxClick: new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg"),
-            bgMusic: new Audio("https://ia800605.us.archive.org/8/items/8-bitBeatItMichaelJacksonCover/8-bit%20Beat%20It%20-%20Michael%20Jackson%20Cover.mp3") 
-        };
-        sounds.bgMusic.loop = true;
-        sounds.bgMusic.volume = 0.15;
-
-        // Функция принудительной разблокировки аудио (Browser Bypass)
-        function unlockAudioEngine() {
-            // Играем тишину во всех дорожках, чтобы браузер одобрил последующие вызовы .play()
-            Object.values(sounds).forEach(sound => {
-                const playPromise = sound.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        if (sound !== sounds.bgMusic) {
-                            sound.pause();
-                            sound.currentTime = 0;
-                        }
-                    }).catch(e => console.log("Audio unlock debug:", e));
-                }
-            });
-        }
-
         onValue(likesRef, (snap) => { 
             document.getElementById('likes-count').innerText = snap.val() || 0; 
         });
@@ -466,8 +422,6 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
             if (localStorage.getItem('aenigma_liked')) {
                 likeBtnEl.classList.add('shake');
                 setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
-                sounds.ow.currentTime = 0;
-                sounds.ow.play().catch(()=>{});
                 return;
             }
             likeBtnEl.style.pointerEvents = 'none';
@@ -475,8 +429,6 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
                 await runTransaction(likesRef, (currentValue) => (currentValue || 0) + 1);
                 localStorage.setItem('aenigma_liked', 'true');
                 likeBtnEl.classList.add('liked');
-                sounds.heeHee.currentTime = 0;
-                sounds.heeHee.play().catch(()=>{});
             } catch (err) { 
                 likeBtnEl.classList.add('shake');
                 setTimeout(() => likeBtnEl.classList.remove('shake'), 400);
@@ -544,10 +496,6 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
         });
 
         window.startGame = function() {
-            // Разблокируем аудиопоток при первом реальном клике пользователя
-            unlockAudioEngine();
-            sounds.bgMusic.play().catch(e => console.log("Bg music failed to auto-start:", e));
-
             document.getElementById('start-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
             loadLevelFromServer();
@@ -627,11 +575,7 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
                 const response = await fetch(`${API_URL}/checkAnswer`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        index: currentLevelIndex, 
-                        answer: answerString, 
-                        rawData: rawData
-                    })
+                    body: JSON.stringify({ index: currentLevelIndex, answer: answerString, rawData: rawData })
                 });
                 const result = await response.json();
                 if (result.success) triggerSuccess(); else triggerFail();
@@ -641,19 +585,13 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
         }
 
         function triggerSuccess() {
-            sounds.heeHee.currentTime = 0;
-            sounds.heeHee.play().catch(()=>{});
-            document.getElementById('modal-message').textContent = `HEE-HEE! Layer ${currentLevelIndex + 1} demolished! Shamone!`;
+            document.getElementById('modal-message').textContent = `Layer ${currentLevelIndex + 1} dismantled. Continuing infiltration...`;
             document.getElementById('success-modal').classList.add('active');
         }
 
         function triggerFail() {
             const el = document.getElementById('user-answer').style.display !== 'none' ? document.getElementById('user-answer') : document.getElementById('clicker-node');
             el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400);
-            
-            sounds.ow.currentTime = 0;
-            sounds.ow.play().catch(()=>{});
-
             wrongAttempts++; 
             document.getElementById('attempt-counter').textContent = wrongAttempts;
             if (wrongAttempts >= 10 && currentLevelIndex < 15) document.getElementById('hint-box').classList.add('visible');
@@ -683,12 +621,7 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
             clickPattern = [];
             const clickBtn = document.getElementById('clicker-node');
             let lastClickTime = 0;
-            clickBtn.onmousedown = clickBtn.ontouchstart = (e) => { 
-                e.preventDefault(); 
-                lastClickTime = Date.now(); 
-                sounds.beatboxClick.currentTime = 0;
-                sounds.beatboxClick.play().catch(()=>{});
-            };
+            clickBtn.onmousedown = clickBtn.ontouchstart = (e) => { e.preventDefault(); lastClickTime = Date.now(); };
             clickBtn.onmouseup = clickBtn.ontouchend = async (e) => {
                 e.preventDefault();
                 const duration = Date.now() - lastClickTime;
@@ -709,11 +642,6 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
             canvas.height = canvas.parentElement.clientHeight;
             ctx.clearRect(0,0, canvas.width, canvas.height);
 
-            ctx.style = "rgba(255, 0, 127, 0.07)";
-            ctx.font = "bold 14px 'Courier New'";
-            ctx.textAlign = "center";
-            ctx.fillText("⭐ DRAW A SMILE FOR RICKY ⭐", canvas.width / 2, canvas.height / 2 - 20);
-
             canvas.onmousedown = canvas.ontouchstart = (e) => { e.preventDefault(); drawing = true; strokePoints = []; };
             canvas.onmouseup = canvas.ontouchend = async (e) => { 
                 e.preventDefault(); drawing = false; 
@@ -726,9 +654,7 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
                 const clientY = e.clientY || (e.touches && e.touches[0].clientY);
                 const pt = { x: Math.round(clientX - rect.left), y: Math.round(clientY - rect.top) };
                 strokePoints.push(pt);
-                
-                ctx.fillStyle = '#00ffff'; 
-                ctx.fillRect(pt.x, pt.y, 4, 4);
+                ctx.fillStyle = '#bc9855'; ctx.fillRect(pt.x, pt.y, 4, 4);
             };
         }
 
@@ -737,13 +663,11 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight; 
-            
-            const letters = ["C", "R", "I", "N", "G", "E"];
+            const letters = ["V", "O", "R", "T", "E", "X"];
 
             function processFrame() {
                 if (currentLevelIndex < 15) return;
-                ctx.fillStyle = 'rgba(26, 0, 51, 0.2)'; 
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(12, 12, 14, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 const time = performance.now();
 
                 if (currentLevelIndex === 22) {
@@ -758,20 +682,17 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
                     for (let i = 0; i < totalLetters; i++) {
                         const x = startX + i * (rectWidth + gap);
                         if (i === currentLetterIdx) {
-                            ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 2; ctx.strokeRect(x, startY, rectWidth, rectHeight);
-                            for (let s = 0; s < 40; s++) { 
-                                ctx.fillStyle = `rgba(0, 255, 255, ${Math.random() * 0.7})`; 
-                                ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2); 
-                            }
+                            ctx.strokeStyle = '#bc9855'; ctx.lineWidth = 2; ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            for (let s = 0; s < 40; s++) { ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.7})`; ctx.fillRect(x + Math.random() * rectWidth, startY + Math.random() * rectHeight, 2, 2); }
                             ctx.fillStyle = '#fff'; ctx.font = 'bold 28px "Courier New"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                             ctx.fillText(letters[i], x + (rectWidth / 2) + (Math.random() * 4 - 2), startY + (rectHeight / 2));
                         } else {
-                            ctx.strokeStyle = '#2a004d'; ctx.lineWidth = 1; ctx.strokeRect(x, startY, rectWidth, rectHeight);
+                            ctx.strokeStyle = '#18181b'; ctx.lineWidth = 1; ctx.strokeRect(x, startY, rectWidth, rectHeight);
                         }
                     }
                 } else {
                     for (let i = 0; i < 350; i++) {
-                        ctx.fillStyle = `rgba(0, 255, 255, ${Math.random() * 0.12})`;
+                        ctx.fillStyle = `rgba(188, 152, 85, ${Math.random() * 0.12})`;
                         ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 1.5, Math.random() * 1.5);
                     }
                 }
@@ -781,10 +702,7 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
         }
 
         function getCleanUrl() { return window.location.href.startsWith('file://') ? 'https://google.com' : window.location.href; }
-        function generateQR() { 
-            const color = "ff007f";
-            try { document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(getCleanUrl())}&color=${color}&bgcolor=1a0033`; } catch(e){} 
-        }
+        function generateQR() { try { document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(getCleanUrl())}&color=bc9855&bgcolor=0c0c0e`; } catch(e){} }
         function copyShareLink() {
             const u = window.location.href;
             if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(u).then(() => alert("Game link copied!")).catch(() => fallbackCopy(u)); } else fallbackCopy(u);
@@ -797,8 +715,6 @@ WARNING! You have entered the CRINGE SECTOR. Michael Jackson will evaluate your 
             document.getElementById('victory-screen').classList.remove('active'); 
             document.getElementById('start-screen').classList.add('active'); 
             window.updateMyLevelStatus(-1);
-            sounds.bgMusic.pause();
-            sounds.bgMusic.currentTime = 0;
         }
 
         document.getElementById('sub-btn').addEventListener('click', submitAnswer);
